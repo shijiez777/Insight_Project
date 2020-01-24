@@ -14,18 +14,18 @@ import pycurl
 #     import Image
 # import pytesseract
 
-rawDataFolder = '../data/raw'
-metadataFolder = os.path.join(rawDataFolder, 'metadata')
+raw_data_folder = '../data/raw'
+metadata_folder = os.path.join(raw_data_folder, 'metadata')
 
-# complaintFolder = os.path.join(rawDataFolder, 'complaints')
-# judgementFolder = os.path.join(rawDataFolder, 'judgements')
-# countyComplaintFolder = os.path.join(rawDataFolder, 'countyComplaints')
+# complaint_folder = os.path.join(raw_data_folder, 'complaints')
+# judgementFolder = os.path.join(raw_data_folder, 'judgements')
+# county_complaint_folder = os.path.join(raw_data_folder, 'countyComplaints')
 
-complaintFolder = 'complaints'
+complaint_folder = 'complaints'
 judgementFolder = 'judgements'
-countyComplaintFolder = 'countyComplaints'
+county_complaint_folder = 'countyComplaints'
 
-os.chdir(metadataFolder)
+os.chdir(metadata_folder)
 
 complaints = pd.read_csv('complaint_meta.csv')
 judgements = pd.read_csv('judgement_meta.csv')
@@ -33,32 +33,32 @@ poc_complaint = pd.read_csv('poc_complaint.csv')
 
 os.chdir("..")
 # function for downloading complaint and judgement documents from metadata csv.
-def downloadFiles(folderName, df, startIdx = 0):
-    print("Downloading " + folderName + " docs...")
-    if folderName not in os.listdir():
-        os.mkdir(folderName)
+def download_files(folder_name, df, start_idx = 0):
+    print("Downloading " + folder_name + " docs...")
+    if folder_name not in os.listdir():
+        os.mkdir(folder_name)
 
-    for idx in range(startIdx, len(df)):
-        url = df['poc_file_path'][idx]
-        fileName = url.split('/')[-1]
+    for i in range(start_idx, len(df)):
+        url = df['poc_file_path'][i]
+        file_name = url.split('/')[-1]
         myfile = requests.get(url, allow_redirects=True)
-        open(os.path.join(folderName, fileName), 'wb').write(myfile.content)
+        open(os.path.join(folder_name, file_name), 'wb').write(myfile.content)
 
-        print(idx, end='\r')
+        print(i, end='\r')
     print("Done")
 
 # function for downloading poc_complaint.
-def downloadPOCComplaintFiles(folderName, df, startIdx = 0):
-    print("Downloading " + folderName + " docs...")
+def download_POC_complaint_files(folder_name, df, start_idx = 0):
+    print("Downloading " + folder_name + " docs...")
 
-    if folderName not in os.listdir():
-        os.mkdir(folderName)
+    if folder_name not in os.listdir():
+        os.mkdir(folder_name)
 
     c = pycurl.Curl()
     c.setopt(pycurl.HTTPHEADER, ["x-api-key: rYRv7klUYJa9bFj0MbM3F6YCPE8kTCWH4DxiycxQ"])
 
-    for idx in range(startIdx, len(df)): 
-        document_id = df['document_id'][idx]
+    for i in range(start_idx, len(df)): 
+        document_id = df['document_id'][i]
         url = "https://doc-poc.unicourt.com/v1/getdocument?document_id=" + document_id
 
         c.setopt(c.URL, url)
@@ -68,16 +68,16 @@ def downloadPOCComplaintFiles(folderName, df, startIdx = 0):
         c.perform()
 
         tmp = buffer.getvalue().decode('utf-8')
-        pdfUrl = json.loads(tmp)['url']
+        pdf_url = json.loads(tmp)['url']
     
-        fileName = pdfUrl.split('/')[5].split('?')[0]
-        myfile = requests.get(pdfUrl, allow_redirects=True)
-        open(os.path.join(folderName, fileName), 'wb').write(myfile.content)
+        file_name = pdf_url.split('/')[5].split('?')[0]
+        myfile = requests.get(pdf_url, allow_redirects=True)
+        open(os.path.join(folder_name, file_name), 'wb').write(myfile.content)
 
-        print(idx, end='\r')
+        print(i, end='\r')
     c.close()
     print("Done")
 
-downloadFiles(complaintFolder, complaints)
-downloadFiles(judgementFolder, judgements)
-downloadPOCComplaintFiles(countyComplaintFolder, poc_complaint)
+download_files(complaint_folder, complaints)
+download_files(judgementFolder, judgements)
+download_POC_complaint_files(county_complaint_folder, poc_complaint)

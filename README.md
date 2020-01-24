@@ -11,6 +11,7 @@ Framework for machine learning projects at Insight Data Science.
 
 ## Setup
 Clone repository and update python path
+# Setting environmental variable absolutely necessary as code uses repo_name to navigate within project folder
 ```
 repo_name=Insight_Project_Framework # URL of your new repository
 username=mrubash1 # Username for your personal github account
