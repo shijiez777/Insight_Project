@@ -5,11 +5,18 @@ import numpy as np
 from pdf2image import convert_from_path
 import os
 
+import pickle
+
 from pdf2image.exceptions import (
     PDFInfoNotInstalledError,
     PDFPageCountError,
     PDFSyntaxError
 )
+
+
+
+
+
 
 
 # import cv2
@@ -33,19 +40,20 @@ def pdf2text(pdf_folder_path, text_folder_path, start_index=0):
     print("total file #:", str(len(files)))
     for i in range(start_index, len(files)):
         pdf_file = files[i]
-        
-        #
-        print(pdf_file)
-        #
-        
+
         text_name = pdf_file.split('.')[0]
         images = convert_from_path(os.path.join(pdf_folder_path, pdf_file))
         tmp_texts = []
         for image in images:
             tmp_texts.append(pytesseract.image_to_string(image))
         # dump file using pickle
-        txt_file_name = os.path.join(text_folder_path, text_name) + '.pkl'
-        with open(txt_file_name, 'wb') as filehandle:
+        text_file_name = os.path.join(text_folder_path, text_name) + '.pkl'
+        
+        # 
+        print("text file: " + text_name)
+        #
+        
+        with open(text_file_name, 'wb') as filehandle:
             pickle.dump(tmp_texts, filehandle)
         print(i, end='\r')
         # break for testing
@@ -53,11 +61,32 @@ def pdf2text(pdf_folder_path, text_folder_path, start_index=0):
             break
     print("Done")
 
-#move to data directory
+
+def read_pickle(text_folder_path, id):
+    file_names = os.listdir(text_folder_path)
+    with open(os.path.join(text_folder_path, file_names[id]), 'rb') as filehandle:
+        # read the data as binary data stream
+        read_text = pickle.load(filehandle)
+    return read_text
+
+
+
+# #move to data directory
 os.chdir(os.environ['Insight_Project'])
 
 os.chdir('data')
 
-pdf_folder_path = 'raw/complaints'
-text_folder_path = 'preprocessed/complaints'
+# # Process complaints
+# pdf_folder_path = 'raw/complaints'
+# text_folder_path = 'preprocessed/complaints'
+# pdf2text(pdf_folder_path, text_folder_path)
+
+# process judgements
+pdf_folder_path = 'raw/judgements'
+text_folder_path = 'preprocessed/judgements'
+pdf2text(pdf_folder_path, text_folder_path)
+
+# Process countyComplaints
+pdf_folder_path = 'raw/countyComplaints'
+text_folder_path = 'preprocessed/countyComplaints'
 pdf2text(pdf_folder_path, text_folder_path)
