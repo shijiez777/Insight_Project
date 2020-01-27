@@ -90,4 +90,3 @@ pdf2text(pdf_folder_path, text_folder_path)
 pdf_folder_path = 'raw/countyComplaints'
 text_folder_path = 'preprocessed/countyComplaints'
 pdf2text(pdf_folder_path, text_folder_path)
-OCR
