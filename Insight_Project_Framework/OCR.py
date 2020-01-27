@@ -30,7 +30,7 @@ from pdf2image.exceptions import (
 # 
 
 # read documents from a folder in raw data, OCR and save result in folder in preprocessed
-def pdf2text(pdf_folder_path, text_folder_path, start_index=0):
+def doc2text(pdf_folder_path, text_folder_path, start_index=0):
     print("converting pdf in " + pdf_folder_path + " to text and saving in " + text_folder_path)
 
     if text_folder_path.split('/')[1] not in os.listdir('preprocessed'):
