@@ -1,19 +1,32 @@
 # Script to run OCR on pdf files and output text into data/preprocessed.
 
-import pytesseract
+# import pytesseract
 import numpy as np
-from pdf2image import convert_from_path
+# from pdf2image import convert_from_path
 import os
 
 import pickle
 
-from pdf2image.exceptions import (
-    PDFInfoNotInstalledError,
-    PDFPageCountError,
-    PDFSyntaxError
-)
 
 
+# from pdf2image.exceptions import (
+#     PDFInfoNotInstalledError,
+#     PDFPageCountError,
+#     PDFSyntaxError
+# )
+
+
+import sys
+# insert at 1, 0 is the script path (or '' in REPL)
+sys.path.insert(1, 'Tolstoy-UniCourt')
+
+
+# os.chdir('Tolstoy-UniCourt')
+# print(os.getcwd())
+# print(os.listdir())
+
+from main_func import pdf_to_txt
+# import main_func
 
 
 
@@ -40,24 +53,21 @@ def doc2text(pdf_folder_path, text_folder_path, start_index=0):
     print("total file #:", str(len(files)))
     for i in range(start_index, len(files)):
         pdf_file = files[i]
-
-        text_name = pdf_file.split('.')[0]
-        images = convert_from_path(os.path.join(pdf_folder_path, pdf_file))
-        tmp_texts = []
-        for image in images:
-            tmp_texts.append(pytesseract.image_to_string(image))
-        # dump file using pickle
-        text_file_name = os.path.join(text_folder_path, text_name) + '.pkl'
-        
-        # 
-        print("text file: " + text_name)
-        #
-        
-        with open(text_file_name, 'wb') as filehandle:
-            pickle.dump(tmp_texts, filehandle)
-        print(i, end='\r')
+        if pdf_file.split('.')[-1] == 'pdf':
+            text_name = pdf_file.split('.')[0]
+            tmp_text = pdf_to_txt(os.path.join(pdf_folder_path, pdf_file))
+            
+            # images = convert_from_path(os.path.join(pdf_folder_path, pdf_file))
+            # tmp_texts = []
+            # for image in images:
+            #     tmp_texts.append(pytesseract.image_to_string(image))
+            # # dump file using pickle
+            text_file_name = os.path.join(text_folder_path, text_name) + '.pkl'        
+            with open(text_file_name, 'wb') as filehandle:
+                pickle.dump(tmp_text, filehandle)
+            print(i, end='\r')
         # break for testing
-        if i == 10:
+        if i == 1000:
             break
     print("Done")
 
@@ -77,16 +87,16 @@ os.chdir(os.environ['Insight_Project'])
 os.chdir('data')
 
 # # Process complaints
-# pdf_folder_path = 'raw/complaints'
-# text_folder_path = 'preprocessed/complaints'
-# pdf2text(pdf_folder_path, text_folder_path)
+pdf_folder_path = 'raw/complaints'
+text_folder_path = 'preprocessed/complaints'
+doc2text(pdf_folder_path, text_folder_path)
 
 # process judgements
-pdf_folder_path = 'raw/judgements'
-text_folder_path = 'preprocessed/judgements'
-pdf2text(pdf_folder_path, text_folder_path)
+# pdf_folder_path = 'raw/judgements'
+# text_folder_path = 'preprocessed/judgements'
+# pdf2text(pdf_folder_path, text_folder_path)
 
 # Process countyComplaints
-pdf_folder_path = 'raw/countyComplaints'
-text_folder_path = 'preprocessed/countyComplaints'
-pdf2text(pdf_folder_path, text_folder_path)
+# pdf_folder_path = 'raw/countyComplaints'
+# text_folder_path = 'preprocessed/countyComplaints'
+# pdf2text(pdf_folder_path, text_folder_path)
