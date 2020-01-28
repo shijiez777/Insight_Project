@@ -109,3 +109,8 @@ venv.bak/
 .mypy_cache/
 .dmypy.json
 dmypy.json
+
+
+# skip files in data
+data/*
+Insight_Project_Framework/Tolstoy-UniCourt/*
