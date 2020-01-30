@@ -25,7 +25,7 @@ sys.path.insert(1, 'Tolstoy-UniCourt')
 # print(os.getcwd())
 # print(os.listdir())
 
-from main_func import pdf_to_txt
+from main import pdf_to_txt
 # import main_func
 
 
@@ -67,8 +67,8 @@ def doc2text(pdf_folder_path, text_folder_path, start_index=0):
                 pickle.dump(tmp_text, filehandle)
             print(i, end='\r')
         # break for testing
-        if i == 1000:
-            break
+        # if i == 1000:
+        #     break
     print("Done")
 
 
@@ -80,16 +80,21 @@ def read_pickle(text_folder_path, id):
     return read_text
 
 
+if __name__ == "__main__":
+    # #move to data directory
+    os.chdir(os.environ['Insight_Project'])
 
-# #move to data directory
-os.chdir(os.environ['Insight_Project'])
+    os.chdir('data')
 
-os.chdir('data')
+    # # Process complaints
+    pdf_folder_path = 'raw/complaints'
+    text_folder_path = 'preprocessed/complaints'
 
-# # Process complaints
-pdf_folder_path = 'raw/complaints'
-text_folder_path = 'preprocessed/complaints'
-doc2text(pdf_folder_path, text_folder_path)
+    start_index = 0
+    start_index = len(os.listdir(text_folder_path)) - 1
+    print("start index: " + str(start_index))
+
+    doc2text(pdf_folder_path, text_folder_path, start_index)
 
 # process judgements
 # pdf_folder_path = 'raw/judgements'

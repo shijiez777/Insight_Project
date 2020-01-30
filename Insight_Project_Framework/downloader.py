@@ -14,31 +14,14 @@ import pycurl
 #     import Image
 # import pytesseract
 
-raw_data_folder = '../data/raw'
-metadata_folder = os.path.join(raw_data_folder, 'metadata')
 
-# complaint_folder = os.path.join(raw_data_folder, 'complaints')
-# judgementFolder = os.path.join(raw_data_folder, 'judgements')
-# county_complaint_folder = os.path.join(raw_data_folder, 'countyComplaints')
-
-complaint_folder = 'complaints'
-judgementFolder = 'judgements'
-# county_complaint_folder = 'countyComplaints'
-
-os.chdir(metadata_folder)
-
-complaints = pd.read_csv('complaint_meta.csv')
-judgements = pd.read_csv('judgement_meta.csv')
-# poc_complaint = pd.read_csv('poc_complaint.csv')
-
-os.chdir("..")
 # function for downloading complaint and judgement documents from metadata csv.
-def download_files(folder_name, df, start_idx = 0):
+def download_files(folder_name, df, start_index = 0):
     print("Downloading " + folder_name + " docs...")
     if folder_name not in os.listdir():
         os.mkdir(folder_name)
 
-    for i in range(start_idx, len(df)):
+    for i in range(start_index, len(df)):
         url = df['poc_file_path'][i]
         file_name = df['document_id'][i] + '.' + url.split('.')[-1]
         # file_name = url.split('/')[-1]
@@ -81,7 +64,31 @@ def download_files(folder_name, df, start_idx = 0):
 #         print(i, end='\r')
 #     c.close()
 #     print("Done")
+if __name__ == "__main__":
 
-download_files(complaint_folder, complaints)
-# download_files(judgementFolder, judgements)
-# download_POC_complaint_files(county_complaint_folder, poc_complaint)
+    raw_data_folder = '../data/raw'
+    metadata_folder = os.path.join(raw_data_folder, 'metadata')
+
+    # complaint_folder = os.path.join(raw_data_folder, 'complaints')
+    # judgementFolder = os.path.join(raw_data_folder, 'judgements')
+    # county_complaint_folder = os.path.join(raw_data_folder, 'countyComplaints')
+
+    complaint_folder = 'complaints'
+    # judgementFolder = 'judgements'
+    # county_complaint_folder = 'countyComplaints'
+
+    os.chdir(metadata_folder)
+
+    complaints = pd.read_csv('complaint_meta.csv')
+    # judgements = pd.read_csv('judgement_meta.csv')
+    # poc_complaint = pd.read_csv('poc_complaint.csv')
+    os.chdir("..")
+
+    start_index = 0
+    start_index = len(os.listdir(text_folder_path)) - 1
+    print("start index: " + str(start_index))
+
+    # doc2text(pdf_folder_path, text_folder_path, start_index)
+    download_files(complaint_folder, complaints, start_index)
+    # download_files(judgementFolder, judgements)
+    # download_POC_complaint_files(county_complaint_folder, poc_complaint)
