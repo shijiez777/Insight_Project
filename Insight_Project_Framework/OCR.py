@@ -41,15 +41,19 @@ def doc2text(pdf_folder_path, text_folder_path, start_index=0):
                 tmp_texts.append(pytesseract.image_to_string(image))
             # dump file using pickle
             
-            doc_dict[text_name] = tmp_texts
-            
-            text_file_name = os.path.join(text_folder_path, 'extracted_text') + '.pkl'
+            text_file_name = os.path.join(text_folder_path, text_name) + '.pkl'        
+            with open(text_file_name, 'wb') as filehandle:
+                pickle.dump(tmp_texts, filehandle)
             print(i, end='\r')
-            if i % 100 == 0:
-                with open(text_file_name, 'wb') as filehandle:
-                    pickle.dump(doc_dict, filehandle)
-    with open(text_file_name, 'wb') as filehandle:
-        pickle.dump(doc_dict, filehandle)
+
+            # doc_dict[text_name] = tmp_texts
+    #         text_file_name = os.path.join(text_folder_path, 'extracted_text') + '.pkl'
+    #         print(i, end='\r')
+    #         if i % 100 == 0:
+    #             with open(text_file_name, 'wb') as filehandle:
+    #                 pickle.dump(doc_dict, filehandle)
+    # with open(text_file_name, 'wb') as filehandle:
+    #     pickle.dump(doc_dict, filehandle)
             
         # break for testing
         # if i == 1000:
