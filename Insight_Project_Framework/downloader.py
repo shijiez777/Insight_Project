@@ -66,7 +66,8 @@ def download_files(folder_name, df, start_index = 0):
 #     print("Done")
 if __name__ == "__main__":
 
-    raw_data_folder = '/home/shijiez/googleBucket/data/raw'
+    os.chdir(os.environ['data_dir'])
+    raw_data_folder = 'raw'
     metadata_folder = os.path.join(raw_data_folder, 'metadata')
 
     # complaint_folder = os.path.join(raw_data_folder, 'complaints')
