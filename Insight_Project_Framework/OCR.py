@@ -15,8 +15,8 @@ from pdf2image.exceptions import (
 
 
 import sys
-sys.path.insert(1, 'Tolstoy-UniCourt')
-from main import pdf_to_txt
+# sys.path.insert(1, 'Tolstoy-UniCourt')
+# from main import pdf_to_txt
 
 
 # read documents from a folder in raw data, OCR and save result in folder in preprocessed
@@ -33,7 +33,7 @@ def doc2text(pdf_folder_path, text_folder_path, start_index=0):
         pdf_file = files[i]
         if pdf_file.split('.')[-1] == 'pdf':
             text_name = pdf_file.split('.')[0]
-            tmp_text = pdf_to_txt(os.path.join(pdf_folder_path, pdf_file))
+            # tmp_text = pdf_to_txt(os.path.join(pdf_folder_path, pdf_file))
             
             images = convert_from_path(os.path.join(pdf_folder_path, pdf_file))
             tmp_texts = []
@@ -57,7 +57,7 @@ def doc2text(pdf_folder_path, text_folder_path, start_index=0):
     print("Done")
 
 
-# # read documents from a folder in raw data, OCR and save result in folder in preprocessed
+# read documents from a folder in raw data, OCR and save result in folder in preprocessed
 # def doc2text(pdf_folder_path, text_folder_path, start_index=0):
 #     print("converting pdf in " + pdf_folder_path + " to text and saving in " + text_folder_path)
 
@@ -71,11 +71,6 @@ def doc2text(pdf_folder_path, text_folder_path, start_index=0):
 #         if pdf_file.split('.')[-1] == 'pdf':
 #             text_name = pdf_file.split('.')[0]
 #             tmp_text = pdf_to_txt(os.path.join(pdf_folder_path, pdf_file))
-            
-#             # images = convert_from_path(os.path.join(pdf_folder_path, pdf_file))
-#             # tmp_texts = []
-#             # for image in images:
-#             #     tmp_texts.append(pytesseract.image_to_string(image))
 #             # # dump file using pickle
 #             text_file_name = os.path.join(text_folder_path, text_name) + '.pkl'        
 #             with open(text_file_name, 'wb') as filehandle:
