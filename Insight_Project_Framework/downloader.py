@@ -88,8 +88,7 @@ if __name__ == "__main__":
     # poc_complaint = pd.read_csv('poc_complaint.csv')
     os.chdir("..")
 
-    start_index = 0
-    start_index = len(os.listdir(complaint_folder)) - 1
+    start_index = len(os.listdir(complaint_folder))
     print("start index: " + str(start_index))
 
     # doc2text(pdf_folder_path, text_folder_path, start_index)

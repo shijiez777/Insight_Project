@@ -109,8 +109,7 @@ if __name__ == "__main__":
     pdf_folder_path = 'raw/complaints'
     text_folder_path = 'preprocessed/complaints'
 
-    start_index = 0
-    start_index = len(os.listdir(text_folder_path)) - 1
+    start_index = len(os.listdir(text_folder_path))
     print("start index: " + str(start_index))
 
     doc2text(pdf_folder_path, text_folder_path, start_index)
