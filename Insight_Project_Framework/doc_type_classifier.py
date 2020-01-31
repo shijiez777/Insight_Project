@@ -71,8 +71,8 @@ def train(X_train, y_train):
 
 
 if __name__ == "__main__":
-
-    text_folder = '../data/preprocessed/complaints'
+    os.chdir(os.environ['data_dir'])
+    text_folder = 'preprocessed/complaints'
     keys = ['FRE', 'KC', 'LA', 'SCL', 'SFC', 'SM']
     county_names = ['fresno', 'kern', 'los angeles', 'santa clara', 'san francisco', 'san mateo']
     corpus, labels = load_data_and_clean(text_folder)
