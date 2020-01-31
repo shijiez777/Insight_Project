@@ -70,23 +70,26 @@ if __name__ == "__main__":
     raw_data_folder = 'raw'
     metadata_folder = os.path.join(raw_data_folder, 'metadata')
 
+
+    os.chdir(metadata_folder)
+
+    complaints = pd.read_csv('complaint_meta.csv')
+
     # complaint_folder = os.path.join(raw_data_folder, 'complaints')
     # judgementFolder = os.path.join(raw_data_folder, 'judgements')
     # county_complaint_folder = os.path.join(raw_data_folder, 'countyComplaints')
 
     complaint_folder = 'complaints'
+    # text_folder_path = os.path.join(os.environ['data_dir'], 'raw', 'complaints')
     # judgementFolder = 'judgements'
     # county_complaint_folder = 'countyComplaints'
 
-    os.chdir(metadata_folder)
-
-    complaints = pd.read_csv('complaint_meta.csv')
     # judgements = pd.read_csv('judgement_meta.csv')
     # poc_complaint = pd.read_csv('poc_complaint.csv')
     os.chdir("..")
 
     start_index = 0
-    start_index = len(os.listdir(text_folder_path)) - 1
+    start_index = len(os.listdir(complaint_folder)) - 1
     print("start index: " + str(start_index))
 
     # doc2text(pdf_folder_path, text_folder_path, start_index)
