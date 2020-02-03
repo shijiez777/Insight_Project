@@ -176,7 +176,9 @@ if __name__ == "__main__":
     unprocessed_pdf_files = []
     for k in range(len(unprocessed_pdf_ids)):
         idx = np.where(unprocessed_pdf_ids[k] == pdf_ids)[0][0]
-        unprocessed_pdf_files.append(pdf_files[idx])
+        # print(idx)
+        if pdf_files[idx][-3:] == 'pdf':
+            unprocessed_pdf_files.append(pdf_files[idx])
 
     print("# Files to be OCRed: " + str(len(unprocessed_pdf_files)))
 
