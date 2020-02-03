@@ -123,7 +123,9 @@ class ThreadManger(Thread):
     def run(self):
         while True:
             if self.queue.qsize() > 0:
-                method, para = self.queue.get()
+                items = self.queue.get()
+                method = items[0]
+                para = items[1:]
                 method(para)
                 print("# tasks left: " + str(self.queue.qsize()))
                 self.queue.task_done()
