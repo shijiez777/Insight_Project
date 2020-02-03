@@ -107,8 +107,12 @@ def doc2text_single(pdf_folder_path, text_folder_path, pdf_file_name):
     # for image in images:
     #     tmp_texts.append(pytesseract.image_to_string(image))
 
+    print(pdf_file_name)
+    
     for i in range(len(images)):
         if i <= 1:
+            # print(i)
+            image = images[i]
             tmp_texts.append(pytesseract.image_to_string(image))
 
     # dump file using pickle
