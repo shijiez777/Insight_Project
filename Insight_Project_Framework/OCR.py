@@ -13,6 +13,9 @@ from pdf2image.exceptions import (
     PDFSyntaxError
 )
 
+import queue
+import multiprocessing
+
 
 import sys
 # sys.path.insert(1, 'Tolstoy-UniCourt')
@@ -94,31 +97,95 @@ def read_pickle(text_folder_path, id):
     return read_text
 
 
+# Function to convert single pdf to text and save
+def doc2text_single(pdf_folder_path, text_folder_path, pdf_file_name):
+    text_name = pdf_file_name.split('.')[0]
+
+    images = convert_from_path(os.path.join(pdf_folder_path, pdf_file_name))
+    tmp_texts = []
+    for image in images:
+        tmp_texts.append(pytesseract.image_to_string(image))
+    
+    # dump file using pickle
+    text_file_name_full = os.path.join(text_folder_path, text_name) + '.pkl'        
+    with open(text_file_name_full, 'wb') as filehandle:
+        pickle.dump(tmp_texts, filehandle)
+    print("Done")
+
+# threadmanager class for running multithreading.
+class ThreadManger(Thread):
+
+    def __init__(self, queue):
+        super(ThreadManger, self).__init__()
+        self.queue = queue
+
+    def run(self):
+        while True:
+            if self.queue.qsize() > 0:
+                method, para = self.queue.get()
+                method(para)
+                print("# tasks left: " + str(self.queue.qsize()))
+                self.queue.task_done()
+
+# SINGLE THREAD PROCESS
+# if __name__ == "__main__":
+#     # #move to data directory
+#     # os.chdir(os.environ['Insight_Project'])
+
+#     # os.chdir('data')
+#     # data_folder = '/home/shijiez/googleBucket/data'
+#     # os.chdir(data_folder)
+#     os.chdir(os.environ['data_dir'])
+
+
+#     # # Process complaints
+#     pdf_folder_path = 'raw/complaints'
+#     text_folder_path = 'preprocessed/complaints'
+
+#     start_index = len(os.listdir(text_folder_path))
+#     print("start index: " + str(start_index))
+
+#     doc2text(pdf_folder_path, text_folder_path, start_index)
+
+
+# MULTITHREAD PROCESS
 if __name__ == "__main__":
     # #move to data directory
-    # os.chdir(os.environ['Insight_Project'])
-
-    # os.chdir('data')
-    # data_folder = '/home/shijiez/googleBucket/data'
-    # os.chdir(data_folder)
     os.chdir(os.environ['data_dir'])
 
-
-    # # Process complaints
     pdf_folder_path = 'raw/complaints'
     text_folder_path = 'preprocessed/complaints'
 
-    start_index = len(os.listdir(text_folder_path))
-    print("start index: " + str(start_index))
+    pdf_files = os.listdir(pdf_folder_path)
+    text_files = os.listdir(text_folder_path)
 
-    doc2text(pdf_folder_path, text_folder_path, start_index)
+    pdf_ids = []
+    for i in range(len(pdf_files)):
+        pdf_ids.append(pdf_files[i].split('.')[0])
+    pdf_ids = np.array(pdf_ids)
 
-# process judgements
-# pdf_folder_path = 'raw/judgements'
-# text_folder_path = 'preprocessed/judgements'
-# pdf2text(pdf_folder_path, text_folder_path)
+    for j in range(len(text_files)):
+        text_files[j] = text_files[j].split('.')[0]
 
-# Process countyComplaints
-# pdf_folder_path = 'raw/countyComplaints'
-# text_folder_path = 'preprocessed/countyComplaints'
-# pdf2text(pdf_folder_path, text_folder_path)
+    # find files that are NOT YET PROCESSED
+    unprocessed_pdf_ids = np.setdiff1d(pdf_ids, text_files)
+
+    unprocessed_pdf_files = []
+    for k in range(len(unprocessed_pdf_ids)):
+        idx = np.where(unprocessed_pdf_ids[k] == pdf_ids)[0][0]
+        unprocessed_pdf_files.append(pdf_files[idx])
+
+    print("# Files to be OCRed: " + str(len(unprocessed_pdf_files)))
+
+    # add task to queue
+    Q = queue.Queue(len(unprocessed_pdf_files))
+    for i in range(len(unprocessed_pdf_files)):
+        Q.put((doc2text_single, pdf_folder_path, text_folder_path, unprocessed_pdf_files[i]))
+
+    num_cores = multiprocessing.cpu_count()
+
+    for l in range(num_cores):
+        print("starting thread no %s" % i)
+        thread = ThreadManger(Q)
+        thread.start()
+

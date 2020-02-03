@@ -6,7 +6,7 @@ import requests
 import json
 from io import BytesIO
 import pycurl
-
+import queue
 
 # try:
 #     from PIL import Image
@@ -33,6 +33,43 @@ def download_files(folder_name, df, start_index = 0):
         # if i == 10:
         #     break
     print("Done")
+
+
+# function for downloading single file for multithreading.
+def download_single_file(folder_name, url, file_name): # , index
+    print("Downloading doc no: " + str(index), end='\r')
+    # if folder_name not in os.listdir():
+    #     os.mkdir(folder_name)
+
+    # for i in range(start_index, len(df)):
+    # url = df['poc_file_path'][i]
+    # file_name = df['document_id'][i] + '.' + url.split('.')[-1]
+    # file_name = url.split('/')[-1]
+    
+    myfile = requests.get(url, allow_redirects=True)
+    open(os.path.join(folder_name, file_name), 'wb').write(myfile.content)
+
+    print(i, end='\r')
+    # if i == 10:
+    #     break
+    # print("Done")
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 # function for downloading poc_complaint.
 # def download_POC_complaint_files(folder_name, df, start_idx = 0):
@@ -64,6 +101,9 @@ def download_files(folder_name, df, start_index = 0):
 #         print(i, end='\r')
 #     c.close()
 #     print("Done")
+
+
+### single thread process
 if __name__ == "__main__":
 
     os.chdir(os.environ['data_dir'])
@@ -75,23 +115,52 @@ if __name__ == "__main__":
 
     complaints = pd.read_csv('complaint_meta.csv')
 
-    # complaint_folder = os.path.join(raw_data_folder, 'complaints')
-    # judgementFolder = os.path.join(raw_data_folder, 'judgements')
-    # county_complaint_folder = os.path.join(raw_data_folder, 'countyComplaints')
-
     complaint_folder = 'complaints'
-    # text_folder_path = os.path.join(os.environ['data_dir'], 'raw', 'complaints')
-    # judgementFolder = 'judgements'
-    # county_complaint_folder = 'countyComplaints'
-
-    # judgements = pd.read_csv('judgement_meta.csv')
-    # poc_complaint = pd.read_csv('poc_complaint.csv')
     os.chdir("..")
 
+    # serial downloading
     start_index = len(os.listdir(complaint_folder))
     print("start index: " + str(start_index))
-
-    # doc2text(pdf_folder_path, text_folder_path, start_index)
     download_files(complaint_folder, complaints, start_index)
-    # download_files(judgementFolder, judgements)
-    # download_POC_complaint_files(county_complaint_folder, poc_complaint)
+
+    # multithreaded downloading
+    all_ids = complaints['document_id']
+    downloaded_ids = os.listdir(complaint_folder)
+
+
+
+
+
+
+
+## multithread
+# if __name__ == "__main__":
+
+#     os.chdir(os.environ['data_dir'])
+#     raw_data_folder = 'raw'
+#     metadata_folder = os.path.join(raw_data_folder, 'metadata')
+
+
+#     os.chdir(metadata_folder)
+
+#     complaints = pd.read_csv('complaint_meta.csv')
+
+#     complaint_folder = 'complaints'
+#     os.chdir("..")
+
+#     complaint_files = os.listdir(complaint_folder)
+#     complaint_ids = 
+    
+    
+    
+    
+#     # start_index = len(os.listdir(complaint_folder))
+    
+    
+    
+#     print("start index: " + str(start_index))
+#     download_files(complaint_folder, complaints, start_index)
+
+#     # multithreaded downloading
+#     all_ids = complaints['document_id']
+#     downloaded_ids = os.listdir(complaint_folder)
