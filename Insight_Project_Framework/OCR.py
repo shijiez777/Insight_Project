@@ -185,7 +185,7 @@ if __name__ == "__main__":
     for i in range(len(unprocessed_pdf_files)):
         Q.put((doc2text_single, pdf_folder_path, text_folder_path, unprocessed_pdf_files[i]))
 
-    num_cores = int(multiprocessing.cpu_count()/4*3)
+    num_cores = int(multiprocessing.cpu_count()/2)
 
     for l in range(num_cores):
         print("starting thread no %s" % i)
