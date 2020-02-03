@@ -4,6 +4,7 @@ import pytesseract
 import numpy as np
 from pdf2image import convert_from_path
 import os
+from threading import Thread
 
 import pickle
 
