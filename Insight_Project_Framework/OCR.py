@@ -125,8 +125,8 @@ class ThreadManger(Thread):
             if self.queue.qsize() > 0:
                 items = self.queue.get()
                 method = items[0]
-                para = items[1:]
-                method(para)
+                args = items[1:]
+                method(*args)
                 print("# tasks left: " + str(self.queue.qsize()))
                 self.queue.task_done()
 
