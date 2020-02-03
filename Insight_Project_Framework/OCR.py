@@ -104,13 +104,21 @@ def doc2text_single(pdf_folder_path, text_folder_path, pdf_file_name):
 
     images = convert_from_path(os.path.join(pdf_folder_path, pdf_file_name))
     tmp_texts = []
-    for image in images:
-        tmp_texts.append(pytesseract.image_to_string(image))
-    
+    # for image in images:
+    #     tmp_texts.append(pytesseract.image_to_string(image))
+
+    for i in range(len(images)):
+        if i <= 1:
+            tmp_texts.append(pytesseract.image_to_string(image))
+
     # dump file using pickle
     text_file_name_full = os.path.join(text_folder_path, text_name) + '.pkl'        
     with open(text_file_name_full, 'wb') as filehandle:
         pickle.dump(tmp_texts, filehandle)
+    
+    del images
+    del tmp_texts
+
     print("Done")
 
 # threadmanager class for running multithreading.
