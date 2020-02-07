@@ -8,159 +8,43 @@ from io import BytesIO
 import pycurl
 import queue
 
-# try:
-#     from PIL import Image
-# except ImportError:
-#     import Image
-# import pytesseract
-
-
 # function for downloading complaint and judgement documents from metadata csv.
 def download_files(folder_name, df, start_index = 0):
+    '''
+    Function that downloads all the pdf files from the dataset.
+    
+    Reads in from the csv, send query to the API and retrieve PDF and save to the local directory.
+
+    Parameters:
+    folder_name(string): path to store the pdf files.
+    df(np.DataFrame): dataframe containing the metadata of pdfs.
+    start_index(int): index of files in dataframe to begin download, optional.    
+    '''
+
     print("Downloading " + folder_name + " docs...")
     if folder_name not in os.listdir():
         os.mkdir(folder_name)
-
     for i in range(start_index, len(df)):
         url = df['poc_file_path'][i]
         file_name = df['document_id'][i] + '.' + url.split('.')[-1]
-        # file_name = url.split('/')[-1]
-        
+        # retrieve doc from URL.
         myfile = requests.get(url, allow_redirects=True)
         open(os.path.join(folder_name, file_name), 'wb').write(myfile.content)
-
         print(i, end='\r')
-        # if i == 10:
-        #     break
     print("Done")
 
-
-# function for downloading single file for multithreading.
-def download_single_file(folder_name, url, file_name): # , index
-    print("Downloading doc no: " + str(index), end='\r')
-    # if folder_name not in os.listdir():
-    #     os.mkdir(folder_name)
-
-    # for i in range(start_index, len(df)):
-    # url = df['poc_file_path'][i]
-    # file_name = df['document_id'][i] + '.' + url.split('.')[-1]
-    # file_name = url.split('/')[-1]
-    
-    myfile = requests.get(url, allow_redirects=True)
-    open(os.path.join(folder_name, file_name), 'wb').write(myfile.content)
-
-    print(i, end='\r')
-    # if i == 10:
-    #     break
-    # print("Done")
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-# function for downloading poc_complaint.
-# def download_POC_complaint_files(folder_name, df, start_idx = 0):
-#     print("Downloading " + folder_name + " docs...")
-
-#     if folder_name not in os.listdir():
-#         os.mkdir(folder_name)
-
-#     c = pycurl.Curl()
-#     c.setopt(pycurl.HTTPHEADER, ["x-api-key: rYRv7klUYJa9bFj0MbM3F6YCPE8kTCWH4DxiycxQ"])
-
-#     for i in range(start_idx, len(df)): 
-#         document_id = df['document_id'][i]
-#         url = "https://doc-poc.unicourt.com/v1/getdocument?document_id=" + document_id
-
-#         c.setopt(c.URL, url)
-#         buffer = BytesIO()
-
-#         c.setopt(c.WRITEDATA, buffer)
-#         c.perform()
-
-#         tmp = buffer.getvalue().decode('utf-8')
-#         pdf_url = json.loads(tmp)['url']
-    
-#         file_name = pdf_url.split('/')[5].split('?')[0]
-#         myfile = requests.get(pdf_url, allow_redirects=True)
-#         open(os.path.join(folder_name, file_name), 'wb').write(myfile.content)
-
-#         print(i, end='\r')
-#     c.close()
-#     print("Done")
-
-
-### single thread process
 if __name__ == "__main__":
 
     os.chdir(os.environ['data_dir'])
     raw_data_folder = 'raw'
     metadata_folder = os.path.join(raw_data_folder, 'metadata')
-
-
+    # change to metadata folder and read metadata csv
     os.chdir(metadata_folder)
-
     complaints = pd.read_csv('complaint_meta.csv')
-
+    # change to folder for storing the data
     complaint_folder = 'complaints'
     os.chdir("..")
-
     # serial downloading
     start_index = len(os.listdir(complaint_folder))
     print("start index: " + str(start_index))
     download_files(complaint_folder, complaints, start_index)
-
-    # multithreaded downloading
-    all_ids = complaints['document_id']
-    downloaded_ids = os.listdir(complaint_folder)
-
-
-
-
-
-
-
-## multithread
-# if __name__ == "__main__":
-
-#     os.chdir(os.environ['data_dir'])
-#     raw_data_folder = 'raw'
-#     metadata_folder = os.path.join(raw_data_folder, 'metadata')
-
-
-#     os.chdir(metadata_folder)
-
-#     complaints = pd.read_csv('complaint_meta.csv')
-
-#     complaint_folder = 'complaints'
-#     os.chdir("..")
-
-#     complaint_files = os.listdir(complaint_folder)
-#     complaint_ids = 
-    
-    
-    
-    
-#     # start_index = len(os.listdir(complaint_folder))
-    
-    
-    
-#     print("start index: " + str(start_index))
-#     download_files(complaint_folder, complaints, start_index)
-
-#     # multithreaded downloading
-#     all_ids = complaints['document_id']
-#     downloaded_ids = os.listdir(complaint_folder)
