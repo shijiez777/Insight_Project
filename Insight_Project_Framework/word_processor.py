@@ -1,16 +1,6 @@
 import pickle
 import os
 import re
-# from sklearn.feature_extraction.text import TfidfVectorizer
-# from sklearn import svm
-# from sklearn import preprocessing
-# from sklearn.manifold import TSNE
-
-# import pandas as pd
-# import numpy as np
-
-# from sklearn.model_selection import train_test_split
-# from sklearn.model_selection import cross_val_score
 import string
 from nltk.tokenize import word_tokenize 
 import nltk
@@ -26,8 +16,27 @@ from nltk.stem import WordNetLemmatizer
 # from matplotlib import rcParams
 # from mpl_toolkits.mplot3d import Axes3D  # noqa: F401 unused import
 # from sklearn.discriminant_analysis import LinearDiscriminantAnalysis
+# from sklearn.feature_extraction.text import TfidfVectorizer
+# from sklearn import svm
+# from sklearn import preprocessing
+# from sklearn.manifold import TSNE
+# import pandas as pd
+# import numpy as np
+# from sklearn.model_selection import train_test_split
+# from sklearn.model_selection import cross_val_score
 
 def read_pickle(text_folder_path, file_name):
+    '''
+    Function to read a pickled file from a directory.
+
+    Parameters:
+    text_folder_path (string): path to the directory where the file is located
+    file_name (string): name of file to read.
+
+    Returns:
+    read_text (string): text read from the pickle file.
+    '''
+
     with open(os.path.join(text_folder_path, file_name), 'rb') as filehandle:
         # read the data as binary data stream
         read_text = pickle.load(filehandle)
@@ -43,17 +52,10 @@ class Word_processor():
         self.lemmatizer = WordNetLemmatizer()
         self.corpus = []
         self.labels = []
-        
         # project specific variables
         self.num_pages = num_pages
         self.county_names = county_names
         self.lexicon_add_words(self.county_names)
-
-    # function to add words to the english word lexicon. Used to add county names
-    def lexicon_add_words(word_list):
-        for phrase in word_list:
-            for word in phrase.split(' '):
-                self.lexicon.add(word) 
 
     # https://www.science-emergence.com/Articles/How-to-remove-string-control-characters-n-t-r-in-python/
     # replace string control chars with a space
@@ -87,7 +89,6 @@ class Word_processor():
         return stemmed
 
     def lemmatize(self, tokens):
-#         lemmatizer = WordNetLemmatizer() 
         lemmatized = [self.lemmatizer.lemmatize(word) for word in tokens]
         return lemmatized
     
@@ -99,11 +100,9 @@ class Word_processor():
     # essentially:
     # isalpha, in words and not in stopwords.
     def loop_cleaning(self, text):
-        # tokenize
-        # stop_words = set(stopwords.words(self.language))
         word_tokens = word_tokenize(text)
         filtered_sentence = [w for w in word_tokens if not w in self.stop_words and w in self.lexicon and w.isalpha()]
-        return filtered_sentence# [word for word in text if not word.isnumeric() or not word.isalpha() ]
+        return filtered_sentence
 
 
     def clean_text(self, text):
@@ -111,21 +110,17 @@ class Word_processor():
         cleaned = text.lower()
         # remove punctuations
         cleaned = self.remove_punctuation(cleaned)
-
         # remove string control characters
         cleaned = self.remove_string_control_chars(cleaned)
         # remove spaces 
         cleaned = self.remove_spaces(cleaned)
-
         # do above stop words, numbers and english lexicon filtering
         cleaned = self.loop_cleaning(cleaned)
-
         # stemming
         # cleaned = stem(cleaned)
         # lemmatizing
         cleaned = self.lemmatize(cleaned)
         # convert back to string
-        # cleaned = nltk.Text(cleaned)
         cleaned = self.list2string(cleaned) 
 
         return cleaned
@@ -145,8 +140,6 @@ class Word_processor():
         for phrase in word_list:
             for word in phrase.split(' '):
                 self.lexicon.add(word)
-        # return lexicon
-    
     
     def load_data_and_clean(self):
         files = os.listdir(self.text_folder_path)
