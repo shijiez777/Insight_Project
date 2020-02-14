@@ -1,3 +1,5 @@
+"""Word_processor class for loading and processing texts from pickle file."""
+
 import pickle
 import os
 import re
@@ -12,22 +14,9 @@ from nltk.corpus import stopwords
 from nltk.stem.porter import PorterStemmer
 from nltk.stem import WordNetLemmatizer 
 
-# import matplotlib.pyplot as plt
-# from matplotlib import rcParams
-# from mpl_toolkits.mplot3d import Axes3D  # noqa: F401 unused import
-# from sklearn.discriminant_analysis import LinearDiscriminantAnalysis
-# from sklearn.feature_extraction.text import TfidfVectorizer
-# from sklearn import svm
-# from sklearn import preprocessing
-# from sklearn.manifold import TSNE
-# import pandas as pd
-# import numpy as np
-# from sklearn.model_selection import train_test_split
-# from sklearn.model_selection import cross_val_score
-
 def read_pickle(text_folder_path, file_name):
-    '''
-    Function to read a pickled file from a directory.
+    """
+    Read a pickled file from a directory.
 
     Parameters:
     text_folder_path (string): path to the directory where the file is located
@@ -35,19 +24,27 @@ def read_pickle(text_folder_path, file_name):
 
     Returns:
     read_text (string): text read from the pickle file.
-    '''
-
+    """
     with open(os.path.join(text_folder_path, file_name), 'rb') as filehandle:
         # read the data as binary data stream
         read_text = pickle.load(filehandle)
     return read_text
 
 class Word_processor():
+    """The class for processing and cleaning raw text.
+
+    Attributes:
+        num_pages (int): # number of pages/(elements in list) to parse. The text extracted
+        Using OCR is structured as a list of strings, each element containts text from one
+        page. num_pages limit number of pages to read in.
+    """
+
     def __init__(self, language, num_pages, county_names, text_folder_path):
-        self.language = language
+        """Initialize variables needed for the class instance."""
+        self.language = language # string specifying language of document
         self.lexicon = set(nltk.corpus.words.words())
         self.stop_words = set(stopwords.words(self.language))
-        self.text_folder_path = text_folder_path
+        self.text_folder_path = text_folder_path # path to the folder where texts are stored
         self.stemmer = PorterStemmer()
         self.lemmatizer = WordNetLemmatizer()
         self.corpus = []
@@ -92,18 +89,20 @@ class Word_processor():
         lemmatized = [self.lemmatizer.lemmatize(word) for word in tokens]
         return lemmatized
     
-    # function to remove:
-    #  1. numbers
-    #  2. combination of alphabets and numbers
-    #  3. stop words.
-    # all the functions combined for performance.
-    # essentially:
-    # isalpha, in words and not in stopwords.
     def loop_cleaning(self, text):
+        """
+        Perform all processings that need to iterate through all theelements in text.
+        
+        The functions are wrapped together to limit number of loops.
+        This function removes:
+        1. non-alphabetical tokens(number and digit-alphabet combination)
+        2. stop words.
+        3. tokens not found from english vocabulary
+        all the procedures are combined for performance reasons.
+        """
         word_tokens = word_tokenize(text)
         filtered_sentence = [w for w in word_tokens if not w in self.stop_words and w in self.lexicon and w.isalpha()]
         return filtered_sentence
-
 
     def clean_text(self, text):
         # lower the text
@@ -122,7 +121,6 @@ class Word_processor():
         cleaned = self.lemmatize(cleaned)
         # convert back to string
         cleaned = self.list2string(cleaned) 
-
         return cleaned
 
     def load_single_file_and_clean(self, file_name):
@@ -135,13 +133,19 @@ class Word_processor():
         return cleaned_text
 
     
-    # function to add words to the english word lexicon. Used to add county names
     def lexicon_add_words(self, word_list):
+        """
+        Add words to the english word lexicon.
+
+        Arguments:
+        word_list (list): list of words/phrases to be added to the lexicon
+        """
         for phrase in word_list:
             for word in phrase.split(' '):
                 self.lexicon.add(word)
     
     def load_data_and_clean(self):
+        """Load and clean texts from the folder and store as a class variable."""
         files = os.listdir(self.text_folder_path)
         for file_name in files:
             clean_text = self.load_single_file_and_clean(file_name)
