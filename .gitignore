@@ -113,4 +113,3 @@ dmypy.json
 
 # skip files in data
 data/*
-Insight_Project_Framework/Tolstoy-UniCourt/*

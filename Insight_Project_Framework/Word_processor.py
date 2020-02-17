@@ -13,22 +13,7 @@ nltk.download('wordnet')
 from nltk.corpus import stopwords 
 from nltk.stem.porter import PorterStemmer
 from nltk.stem import WordNetLemmatizer 
-
-def read_pickle(text_folder_path, file_name):
-    """
-    Read a pickled file from a directory.
-
-    Parameters:
-    text_folder_path (string): path to the directory where the file is located
-    file_name (string): name of file to read.
-
-    Returns:
-    read_text (string): text read from the pickle file.
-    """
-    with open(os.path.join(text_folder_path, file_name), 'rb') as filehandle:
-        # read the data as binary data stream
-        read_text = pickle.load(filehandle)
-    return read_text
+from helpers import *
 
 class Word_processor():
     """The class for processing and cleaning raw text.
@@ -60,7 +45,7 @@ class Word_processor():
         regex = re.compile(r'[\n\r\t]')
         cleaned = regex.sub(" ", text)
         return cleaned
-    
+
     # https://stackoverflow.com/questions/265960/best-way-to-strip-punctuation-from-a-string
     def remove_punctuation(self, text):
         return text.translate(str.maketrans('', '', string.punctuation))
@@ -88,7 +73,7 @@ class Word_processor():
     def lemmatize(self, tokens):
         lemmatized = [self.lemmatizer.lemmatize(word) for word in tokens]
         return lemmatized
-    
+
     def loop_cleaning(self, text):
         """
         Perform all processings that need to iterate through all theelements in text.
@@ -124,7 +109,7 @@ class Word_processor():
         return cleaned
 
     def load_single_file_and_clean(self, file_name):
-        text = read_pickle(self.text_folder_path, file_name)    
+        text = read_pickle(self.text_folder_path, file_name)
         if len(text) > self.num_pages:
             text = text[:self.num_pages]
         # concatenate texts from different pages
@@ -132,7 +117,6 @@ class Word_processor():
         cleaned_text = self.clean_text(text)
         return cleaned_text
 
-    
     def lexicon_add_words(self, word_list):
         """
         Add words to the english word lexicon.
@@ -143,7 +127,7 @@ class Word_processor():
         for phrase in word_list:
             for word in phrase.split(' '):
                 self.lexicon.add(word)
-    
+
     def load_data_and_clean(self):
         """Load and clean texts from the folder and store as a class variable."""
         files = os.listdir(self.text_folder_path)
@@ -153,13 +137,18 @@ class Word_processor():
             self.labels.append(file_name.split('_')[1])
 
 if __name__ == "__main__":
-    language = 'english'
-    num_pages = 2
-    county_names = ['fresno', 'kern', 'los angeles', 'santa clara', 'san francisco', 'san mateo']
+    # language = 'english'
+    # num_pages = 2
+    # county_names = ['fresno', 'kern', 'los angeles', 'santa clara', 'san francisco', 'san mateo']
 
-    text_folder_path = os.path.join(os.environ['data_dir'], 'preprocessed/complaints')
+    # text_folder_path = os.path.join(os.environ['data_dir'], 'preprocessed/complaints')
 
-    wp = Word_processor(language, num_pages, county_names, text_folder_path)
+    config_path = "../configs/config.yml"
+    config = read_yaml(config_path)
+
+
+    # wp = Word_processor(language, num_pages, county_names, text_folder_path)
+    wp = Word_processor(config["language"], config["num_pages"], config["county_names"], config["text_folder_path"])
     wp.load_data_and_clean()
     print(wp.corpus[0])
     print(len(wp.corpus))

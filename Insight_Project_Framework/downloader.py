@@ -1,4 +1,4 @@
-# Download data from metadata csv in data/metadata to data/raw
+"""Download data from metadata csv in data/metadata to data/raw."""
 
 import pandas as pd
 import os
@@ -10,8 +10,8 @@ import queue
 
 # function for downloading complaint and judgement documents from metadata csv.
 def download_files(folder_name, df, start_index = 0):
-    '''
-    Function that downloads all the pdf files from the dataset.
+    """
+    Download all the pdf files from the dataset.
     
     Reads in from the csv, send query to the API and retrieve PDF and save to the local directory.
 
@@ -19,8 +19,7 @@ def download_files(folder_name, df, start_index = 0):
     folder_name(string): path to store the pdf files.
     df(np.DataFrame): dataframe containing the metadata of pdfs.
     start_index(int): index of files in dataframe to begin download, optional.
-    '''
-
+    """
     print("Downloading " + folder_name + " docs...")
     if folder_name not in os.listdir():
         os.mkdir(folder_name)
