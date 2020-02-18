@@ -137,14 +137,24 @@ class Word_processor():
             for word in phrase.split(' '):
                 self.lexicon.add(word)
 
-    def load_data_and_clean(self):
-        """Load and clean texts from the folder and store as a class variable."""
+    def load_training_data_and_clean(self):
+        """Load and clean texts from the folder and store extracted corpus and labels as class variables."""
         files = os.listdir(self.text_folder_path)
         for file_name in files:
             text = read_pickle(self.text_folder_path, file_name)
             clean_text = self.clean_and_concatenate_text(text)
             self.corpus.append(clean_text)
             self.labels.append(file_name.split('_')[1])
+        
+    def load_data_for_prediction(self, processed_data_folder):
+        """Load and clean texts for prediction and return."""
+        cleaned_data = []
+        files = os.listdir(processed_data_folder)
+        for file_name in files:
+            text = read_pickle(processed_data_folder, file_name)
+            clean_text = self.clean_and_concatenate_text(text)
+            cleaned_data.append(clean_text)
+        return cleaned_data, files
 
 if __name__ == "__main__":
     # language = 'english'
@@ -155,7 +165,6 @@ if __name__ == "__main__":
 
     config_path = "../configs/config.yml"
     config = read_yaml(config_path)
-
 
     # wp = Word_processor(language, num_pages, county_names, text_folder_path)
     wp = Word_processor(config["language"], config["num_pages"], config["county_names"], config["text_folder_path"])

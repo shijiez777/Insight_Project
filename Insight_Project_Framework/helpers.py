@@ -40,7 +40,6 @@ def save_model(classifier, model_folder):
     del classifier.X_test
     del classifier.y_train
     del classifier.y_test
-
     dump(classifier, model_path)
     print("Model saved at " + model_folder + ".")
 

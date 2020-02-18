@@ -22,6 +22,7 @@ def download_files(folder_name, df, start_index = 0):
     start_index(int): index of files in dataframe to begin download, optional.
     """
     print("Downloading " + folder_name + " docs...")
+    # os.chdir(folder_name)
     # if folder_name not in os.listdir():
     #     os.mkdir(folder_name)
     for i in range(start_index, len(df)):
@@ -29,9 +30,12 @@ def download_files(folder_name, df, start_index = 0):
         file_name = df['document_id'][i] + '.' + url.split('.')[-1]
         # retrieve doc from URL.
         myfile = requests.get(url, allow_redirects=True)
-        open(os.path.join(folder_name, file_name), 'wb').write(myfile.content)
+        # open(os.path.join(folder_name, file_name), 'wb').write(myfile.content)
+        with open(file_name, 'wb') as file_handle:
+            file_handle.write(myfile.content)
+
         print(i, end='\r')
-    print("Done")
+    print("\nDone")
 
 
 def download_file_by_id(document_id):
@@ -54,20 +58,22 @@ if __name__ == "__main__":
     config = read_yaml(config_path)
 
     # os.chdir(config['data_path'])
-    metadata_folder = os.path.join(config['data_path'], 'raw/metadata')# 'raw/metadata'
-    # check if folder exist, if not, create
-    ensure_dir(metadata_folder)
+    # metadata_folder = os.path.join(config['data_path'], 'raw/metadata')# 'raw/metadata'
+    
     # change to metadata folder and read metadata csv
-    os.chdir(metadata_folder)
-    complaints = pd.read_csv('complaint_meta.csv')
+    # os.chdir(config["metadata_folder"])
+    complaints = pd.read_csv(os.path.join(config["metadata_folder"], 'complaint_meta.csv'))
     # change to folder for storing the data
-    complaint_folder = '../complaints'
-    ensure_dir(complaint_folder)
-    os.chdir(complaint_folder)
+    
+    
+    training_pdf_folder = config["training_pdf_folder"]
+    # complaint_folder = '../complaints'
+    ensure_dir(training_pdf_folder)
+    # os.chdir(training_pdf_folder)
     # serial downloading
-    start_index = len(os.listdir())
+    start_index = len(os.listdir(training_pdf_folder))
     print("start index: " + str(start_index))
-    download_files(complaint_folder, complaints, start_index)
+    download_files(training_pdf_folder, complaints, start_index)
 
 
 

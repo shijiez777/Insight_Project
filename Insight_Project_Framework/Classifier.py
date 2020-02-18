@@ -37,7 +37,7 @@ class Classifier():
     def preprocess_fun(self):
         self.word_processor.lexicon_add_words(self.county_names)
         # load data and clean
-        self.word_processor.load_data_and_clean()
+        self.word_processor.load_training_data_and_clean()
         # convert string labels to numerical
         self.encoded_labels = self.le.fit_transform(self.word_processor.labels)
         self.tf_idf_vector = self.feature_vectorizer.fit_transform(self.word_processor.corpus)
@@ -66,29 +66,24 @@ class Classifier():
         print("Model trained.")
     
     def evaluate(self):
-        print("Mean accuracy over 6 1-vs-all linear SVMs: " + str(c.clf.score(c.X_test, c.y_test)))
+        print("Mean accuracy over 6 1-vs-all linear SVMs: " + str(self.clf.score(self.X_test, self.y_test)))
 
-    def predict_by_id(self, ids, num_pages):
+    def predict_by_id(self, ids):
         texts = []
         for id in ids:
             content = download_file_by_id(id)
-            text = bytes2text(content, num_pages)
+            text = bytes2text(content, self.num_pages)
             cleaned_text = self.word_processor.clean_and_concatenate_text(text)
             texts.append(cleaned_text)
         X_pred = self.feature_vectorizer.transform(texts)
         y_pred = self.clf.predict(X_pred)
         return y_pred
 
-    # def predict_from_folder(self, pdf_folder, num_pages):
-    #     texts = []
-    #     for id in ids:
-    #         content = download_file_by_id(id)
-    #         text = bytes2text(content, num_pages)
-    #         cleaned_text = self.word_processor.clean_and_concatenate_text(text)
-    #         texts.append(cleaned_text)
-    #     X_pred = self.feature_vectorizer.transform(texts)
-    #     y_pred = self.clf.predict(X_pred)
-    #     return y_pred
+    def predict_from_folder(self, processed_data_folder):
+        texts, files = self.word_processor.load_data_for_prediction(processed_data_folder)
+        X_pred = self.feature_vectorizer.transform(texts)
+        y_pred = self.clf.predict(X_pred)
+        return files, y_pred
 
 if __name__ == "__main__":
 
