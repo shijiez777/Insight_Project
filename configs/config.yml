@@ -1,76 +1,33 @@
 
 
-# Dataset Stuff -------------------------------------------------
+# Dataset Stuff ---------------------------------------------
 #
-data_path: ~/data
-output_path: ~/output
+data_path: ../../data
+# output_path: ../../output
+model_folder: ../models
+model_name: model_02-18-20_03:24:31.joblib
 
-val_size: 10000
-train_chunk_size: 40000
+# OCR configs -----------------------------------------------
+# number of threads to run OCR process. Increase to speed up OCR.
+num_cores: 16
 
 # word processing configs -----------------------------------
 language: 'english'
 num_pages: 2
-county_names : ['fresno', 'kern', 'los angeles', 'santa clara', 'san francisco', 'san mateo']
-text_folder_path: ~/data/preprocessed/complaints
+text_folder_path: ../../data/preprocessed/complaints
 
 # Classifier parameters -------------------------------------
+county_names : ['fresno', 'kern', 'los angeles', 'santa clara', 'san francisco', 'san mateo']
 keys : ['FRE', 'KC', 'LA', 'SCL', 'SFC', 'SM']
 # 3000 counties in the states
 # good balance between speed and performance
 num_features: 10000
 test_ratio: 0.2
-# clf: svm.LinearSVC()
-    
 
+# Inference parameters --------------------------------------
+# list of ids to run on prediction.
+ids: ["CA_FRE_09iRh_XfvepbPbJreq6wcQ2", "CA_FRE_0BvgNMShVWXTMrvCogDYbA2", "CA_SCL_4gLMQ6Og9STw4lawaORElw2"]
 
-# Training Hyperparams --------------------------------------
-
-batch_size: 128
-num_epochs: 200
-validation_every: 1
-
-weight_decay: 0.0005
-
-learning_rate_schedule:
-    init: 0.1
-    final: 0.0001
-
-momentum_schedule:
-    0: 0.0
-    1: 0.5
-    2: 0.9
-
-layer_config:
-    0:
-        layer_type: InputLayer
-        input_shape: [128, 1, 91, 64] 
-
-    1:
-        layer_type: Conv2DLayer
-        n_filters: 64
-        filter_size: [8,59]
-        nonlinearity: rectifier
-        init_bias_value: 0.01
-
-    2:
-        layer_type: MaxPooling2DLayer
-        pool_size: [6,3] 
-        ignore_border: False
-
-    3:
-        layer_type: DenseLayer
-        n_outputs: 500
-        nonlinearity: rectifier
-        init_bias_value: 0.1
-        dropout: 0.5
-
-    4:
-        layer_type: DenseLayer
-        n_outputs: 2
-        nonlinearity: sigmoid
-        init_bias_value: 0.1
-        dropout: 0.0
-
-    5:
-        layer_type: OutputLayer
+# inference on pdf files from a folder
+pdf_classification_path: ../dummy_data/
+processed_text_path: ../dummy_data/processed

@@ -7,6 +7,9 @@ import pandas as pd
 import numpy as np
 from sklearn.model_selection import train_test_split
 from Word_processor import *
+from downloader import download_file_by_id
+from OCR import bytes2text
+
 
 class Classifier():
     """The class for processing and cleaning raw text.
@@ -40,9 +43,10 @@ class Classifier():
         self.tf_idf_vector = self.feature_vectorizer.fit_transform(self.word_processor.corpus)
         # train test split
         self.X_train, self.X_test, self.y_train, self.y_test = train_test_split(self.tf_idf_vector.toarray(), self.encoded_labels, test_size=self.test_ratio, stratify=self.encoded_labels)
+        print("Training data processed.")
 
     # simple predict
-    def simple_inference(self, encoded_labels):
+    def simple_inference(self):
         correct_preds = 0
         result_DF = pd.DataFrame(np.zeros((len(self.word_processor.corpus), len(self.keys))), columns = self.county_names)
         for i in range(len(self.word_processor.corpus)):
@@ -53,33 +57,48 @@ class Classifier():
                     result_DF.loc[i, county_name] = 1
 
         for i in range(len(result_DF)):
-            if np.sum(result_DF.loc[i]) == 1 and np.where(result_DF.loc[i] == 1)[0][0] == encoded_labels[i]:
+            if np.sum(result_DF.loc[i]) == 1 and np.where(result_DF.loc[i] == 1)[0][0] == self.encoded_labels[i]:
                 correct_preds += 1
-        print("baseline accuracy: " + str(correct_preds/len(encoded_labels)))
+        print("baseline accuracy: " + str(correct_preds/len(self.encoded_labels)))
 
     def train(self):
         self.clf.fit(self.X_train, self.y_train)
+        print("Model trained.")
     
     def evaluate(self):
         print("Mean accuracy over 6 1-vs-all linear SVMs: " + str(c.clf.score(c.X_test, c.y_test)))
 
+    def predict_by_id(self, ids, num_pages):
+        texts = []
+        for id in ids:
+            content = download_file_by_id(id)
+            text = bytes2text(content, num_pages)
+            cleaned_text = self.word_processor.clean_and_concatenate_text(text)
+            texts.append(cleaned_text)
+        X_pred = self.feature_vectorizer.transform(texts)
+        y_pred = self.clf.predict(X_pred)
+        return y_pred
+
+    # def predict_from_folder(self, pdf_folder, num_pages):
+    #     texts = []
+    #     for id in ids:
+    #         content = download_file_by_id(id)
+    #         text = bytes2text(content, num_pages)
+    #         cleaned_text = self.word_processor.clean_and_concatenate_text(text)
+    #         texts.append(cleaned_text)
+    #     X_pred = self.feature_vectorizer.transform(texts)
+    #     y_pred = self.clf.predict(X_pred)
+    #     return y_pred
+
 if __name__ == "__main__":
 
-    # language = 'english'
-    # num_pages = 2
-    # county_names = ['fresno', 'kern', 'los angeles', 'santa clara', 'san francisco', 'san mateo']
-
-    # text_folder_path = os.path.join(os.environ['data_dir'], 'preprocessed/complaints')
-    # keys = ['FRE', 'KC', 'LA', 'SCL', 'SFC', 'SM']
-    # # 3000 counties in the states
-    # # good balance between speed and performance
-    # num_features = 10000
-    
-    # test_ratio = 0.2
+    config_path = "../configs/config.yml"
+    config = read_yaml(config_path)
 
     clf = svm.LinearSVC()
 
-    c = Classifier(text_folder_path, num_pages, language, keys, county_names, num_features, clf, test_ratio)
+    c = Classifier(config["text_folder_path"], config["num_pages"], config["language"], config["keys"], config["county_names"], config["num_features"], clf, config["test_ratio"])
     c.preprocess_fun()
+    c.simple_inference()
     c.train()
     c.evaluate()

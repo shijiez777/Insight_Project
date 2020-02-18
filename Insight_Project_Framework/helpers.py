@@ -1,4 +1,8 @@
 import yaml
+import pickle
+import os
+from joblib import dump, load
+from datetime import datetime
 
 def read_pickle(text_folder_path, file_name):
     """
@@ -20,3 +24,26 @@ def read_yaml(config_path):
     with open(config_path) as file:
         data = yaml.load(file, Loader=yaml.FullLoader)
     return data
+
+def ensure_dir(directory):
+    if not os.path.exists(directory):
+        os.makedirs(directory)
+
+def save_model(classifier, model_folder):
+    # remove model word
+    model_name = "model_" + datetime.now().strftime("%m-%d-%y_%H:%M:%S") + ".joblib"
+    model_path = os.path.join(model_folder, model_name)
+    # remove training information
+    del classifier.word_processor.corpus
+    del classifier.tf_idf_vector
+    del classifier.X_train
+    del classifier.X_test
+    del classifier.y_train
+    del classifier.y_test
+
+    dump(classifier, model_path)
+    print("Model saved at " + model_folder + ".")
+
+def load_model(model_path):
+    clf = load(model_path) 
+    return clf

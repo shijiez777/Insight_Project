@@ -1,12 +1,13 @@
 """Download data from metadata csv in data/metadata to data/raw."""
 
 import pandas as pd
-import os
 import requests
 import json
 from io import BytesIO
 import pycurl
 import queue
+from helpers import *
+
 
 # function for downloading complaint and judgement documents from metadata csv.
 def download_files(folder_name, df, start_index = 0):
@@ -21,8 +22,8 @@ def download_files(folder_name, df, start_index = 0):
     start_index(int): index of files in dataframe to begin download, optional.
     """
     print("Downloading " + folder_name + " docs...")
-    if folder_name not in os.listdir():
-        os.mkdir(folder_name)
+    # if folder_name not in os.listdir():
+    #     os.mkdir(folder_name)
     for i in range(start_index, len(df)):
         url = df['poc_file_path'][i]
         file_name = df['document_id'][i] + '.' + url.split('.')[-1]
@@ -32,17 +33,55 @@ def download_files(folder_name, df, start_index = 0):
         print(i, end='\r')
     print("Done")
 
+
+def download_file_by_id(document_id):
+    c = pycurl.Curl()
+    c.setopt(pycurl.HTTPHEADER, ["x-api-key: rYRv7klUYJa9bFj0MbM3F6YCPE8kTCWH4DxiycxQ"])
+    url = "https://doc-poc.unicourt.com/v1/getdocument?document_id=" + document_id
+    c.setopt(c.URL, url)
+    buffer = BytesIO()
+    c.setopt(c.WRITEDATA, buffer)
+    c.perform()
+    tmp = buffer.getvalue().decode('utf-8')
+    pdf_url = json.loads(tmp)['url']
+    myfile = requests.get(pdf_url, allow_redirects=True)
+    c.close()
+    return myfile.content
+
 if __name__ == "__main__":
-    os.chdir(os.environ['data_dir'])
-    raw_data_folder = 'raw'
-    metadata_folder = os.path.join(raw_data_folder, 'metadata')
+
+    config_path = "../configs/config.yml"
+    config = read_yaml(config_path)
+
+    # os.chdir(config['data_path'])
+    metadata_folder = os.path.join(config['data_path'], 'raw/metadata')# 'raw/metadata'
+    # check if folder exist, if not, create
+    ensure_dir(metadata_folder)
     # change to metadata folder and read metadata csv
     os.chdir(metadata_folder)
     complaints = pd.read_csv('complaint_meta.csv')
     # change to folder for storing the data
-    complaint_folder = 'complaints'
-    os.chdir("..")
+    complaint_folder = '../complaints'
+    ensure_dir(complaint_folder)
+    os.chdir(complaint_folder)
     # serial downloading
-    start_index = len(os.listdir(complaint_folder))
+    start_index = len(os.listdir())
     print("start index: " + str(start_index))
     download_files(complaint_folder, complaints, start_index)
+
+
+
+
+    # os.chdir(config['data_path'])
+    # raw_data_folder = 'raw'
+    # metadata_folder = os.path.join(raw_data_folder, 'metadata')
+    # # change to metadata folder and read metadata csv
+    # os.chdir(metadata_folder)
+    # complaints = pd.read_csv('complaint_meta.csv')
+    # # change to folder for storing the data
+    # complaint_folder = 'complaints'
+    # os.chdir("..")
+    # # serial downloading
+    # start_index = len(os.listdir(complaint_folder))
+    # print("start index: " + str(start_index))
+    # download_files(complaint_folder, complaints, start_index)

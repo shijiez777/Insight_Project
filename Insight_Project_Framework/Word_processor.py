@@ -1,15 +1,13 @@
 """Word_processor class for loading and processing texts from pickle file."""
 
-import pickle
-import os
 import re
 import string
 from nltk.tokenize import word_tokenize 
 import nltk
-nltk.download('punkt')
-nltk.download('stopwords')
-nltk.download('words')
-nltk.download('wordnet')
+nltk.download('punkt', quiet=True)
+nltk.download('stopwords', quiet=True)
+nltk.download('words', quiet=True)
+nltk.download('wordnet', quiet=True)
 from nltk.corpus import stopwords 
 from nltk.stem.porter import PorterStemmer
 from nltk.stem import WordNetLemmatizer 
@@ -108,14 +106,25 @@ class Word_processor():
         cleaned = self.list2string(cleaned) 
         return cleaned
 
-    def load_single_file_and_clean(self, file_name):
-        text = read_pickle(self.text_folder_path, file_name)
+    # def load_single_file_and_clean(self, file_name):
+    #     text = read_pickle(self.text_folder_path, file_name)
+    #     if len(text) > self.num_pages:
+    #         text = text[:self.num_pages]
+    #     # concatenate texts from different pages
+    #     text = '\n'.join(text)
+    #     cleaned_text = self.clean_text(text)
+    #     return cleaned_text
+
+
+    def clean_and_concatenate_text(self, text):
+        # text = read_pickle(self.text_folder_path, file_name)
         if len(text) > self.num_pages:
             text = text[:self.num_pages]
         # concatenate texts from different pages
         text = '\n'.join(text)
         cleaned_text = self.clean_text(text)
         return cleaned_text
+
 
     def lexicon_add_words(self, word_list):
         """
@@ -132,7 +141,8 @@ class Word_processor():
         """Load and clean texts from the folder and store as a class variable."""
         files = os.listdir(self.text_folder_path)
         for file_name in files:
-            clean_text = self.load_single_file_and_clean(file_name)
+            text = read_pickle(self.text_folder_path, file_name)
+            clean_text = self.clean_and_concatenate_text(text)
             self.corpus.append(clean_text)
             self.labels.append(file_name.split('_')[1])
 
