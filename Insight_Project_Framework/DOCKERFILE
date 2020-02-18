@@ -4,6 +4,12 @@ USER root
 # RUN ["apt-get", "update"]
 # RUN apt-get update
 
+RUN sudo apt-get update
+RUN sudo apt-get install poppler-utils
+RUN sudo apt-get install python-poppler
+RUN sudo apt install tesseract-ocr
+RUN sudo apt install libtesseract-dev
+
 COPY requirements.txt /app
 RUN pip install -r requirements.txt
 

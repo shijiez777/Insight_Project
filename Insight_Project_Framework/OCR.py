@@ -19,7 +19,7 @@ from pdf2image.exceptions import (
 
 # Function to convert single pdf to text and save
 def doc2text(pdf_folder_path, text_folder_path, pdf_file_name, num_pages):
-    '''
+    """
     Function to read single pdf document, parse the pdf into text using tesseract ocr, and store the text.
 
     Parameters:
@@ -27,7 +27,7 @@ def doc2text(pdf_folder_path, text_folder_path, pdf_file_name, num_pages):
     text_folder_path(string): the path to the folder where the extracted text to be stored
     pdf_file_name(string): The name of the pdf file to be parsed.
     num_pages: number of pages of the pdf to extract texts.
-    '''
+    """
 
     text_name = pdf_file_name.split('.')[0]
     images = convert_from_path(os.path.join(pdf_folder_path, pdf_file_name))
