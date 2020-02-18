@@ -91,7 +91,8 @@ class ThreadManger(Thread):
     #             self.queue.task_done()
 
 
-def threaded_OCR(pdf_folder_path, text_folder_path):
+def threaded_OCR(pdf_folder_path, text_folder_path, config):
+    # check if directory exists. If not, create
     ensure_dir(text_folder_path)
 
     pdf_files = os.listdir(pdf_folder_path)
@@ -127,7 +128,7 @@ def threaded_OCR(pdf_folder_path, text_folder_path):
         print("starting thread no %s" % l)
         thread = ThreadManger(Q)
         thread.start()
-        thread.join()
+    thread.join()
 
 # MULTITHREAD PROCESS
 if __name__ == "__main__":
@@ -139,41 +140,42 @@ if __name__ == "__main__":
     pdf_folder_path = 'raw/complaints'
     text_folder_path = 'preprocessed/complaints'
 
-    # check if directory exists. If not, create
-    # ensure_dir(pdf_folder_path)
-    ensure_dir(text_folder_path)
+    threaded_OCR(pdf_folder_path, text_folder_path, config)
 
-    pdf_files = os.listdir(pdf_folder_path)
-    text_files = os.listdir(text_folder_path)
+    # ensure_dir(pdf_folder_path)
+    # ensure_dir(text_folder_path)
+
+    # pdf_files = os.listdir(pdf_folder_path)
+    # text_files = os.listdir(text_folder_path)
 
     # find all PDF ids in the pdf folder
-    pdf_ids = []
-    for i in range(len(pdf_files)):
-        pdf_ids.append(pdf_files[i].split('.')[0])
-    pdf_ids = np.array(pdf_ids)
+    # pdf_ids = []
+    # for i in range(len(pdf_files)):
+    #     pdf_ids.append(pdf_files[i].split('.')[0])
+    # pdf_ids = np.array(pdf_ids)
 
     # find all text ids in the text folder
-    for j in range(len(text_files)):
-        text_files[j] = text_files[j].split('.')[0]
+    # for j in range(len(text_files)):
+    #     text_files[j] = text_files[j].split('.')[0]
 
     # find files that are NOT YET PROCESSED
-    unprocessed_pdf_ids = np.setdiff1d(pdf_ids, text_files)
-    unprocessed_pdf_files = []
-    for k in range(len(unprocessed_pdf_ids)):
-        idx = np.where(unprocessed_pdf_ids[k] == pdf_ids)[0][0]
-        if pdf_files[idx][-3:] == 'pdf':
-            unprocessed_pdf_files.append(pdf_files[idx])
+    # unprocessed_pdf_ids = np.setdiff1d(pdf_ids, text_files)
+    # unprocessed_pdf_files = []
+    # for k in range(len(unprocessed_pdf_ids)):
+    #     idx = np.where(unprocessed_pdf_ids[k] == pdf_ids)[0][0]
+    #     if pdf_files[idx][-3:] == 'pdf':
+    #         unprocessed_pdf_files.append(pdf_files[idx])
 
-    print("# Files to be OCRed: " + str(len(unprocessed_pdf_files)))
+    # print("# Files to be OCRed: " + str(len(unprocessed_pdf_files)))
 
     # add task to queue
-    Q = queue.Queue(len(unprocessed_pdf_files))
-    for i in range(len(unprocessed_pdf_files)):
-        Q.put((doc2text, pdf_folder_path, text_folder_path, unprocessed_pdf_files[i], config["num_pages"]))
+    # Q = queue.Queue(len(unprocessed_pdf_files))
+    # for i in range(len(unprocessed_pdf_files)):
+    #     Q.put((doc2text, pdf_folder_path, text_folder_path, unprocessed_pdf_files[i], config["num_pages"]))
 
     # start the multithread processing.
-    for l in range(config["num_cores"]):
-        print("starting thread no %s" % l)
-        thread = ThreadManger(Q)
-        thread.start()
-        thread.join()
+    # for l in range(config["num_cores"]):
+    #     print("starting thread no %s" % l)
+    #     thread = ThreadManger(Q)
+    #     thread.start()
+    #     thread.join()
