@@ -9,7 +9,6 @@ import queue
 from helpers import *
 
 
-# function for downloading complaint and judgement documents from metadata csv.
 def download_files(folder_name, df, start_index = 0):
     """
     Download all the pdf files from the dataset.
@@ -56,38 +55,12 @@ if __name__ == "__main__":
 
     config_path = "../configs/config.yml"
     config = read_yaml(config_path)
-
-    # os.chdir(config['data_path'])
-    # metadata_folder = os.path.join(config['data_path'], 'raw/metadata')# 'raw/metadata'
     
-    # change to metadata folder and read metadata csv
-    # os.chdir(config["metadata_folder"])
     complaints = pd.read_csv(os.path.join(config["metadata_folder"], 'complaint_meta.csv'))
-    # change to folder for storing the data
-    
     
     training_pdf_folder = config["training_pdf_folder"]
-    # complaint_folder = '../complaints'
     ensure_dir(training_pdf_folder)
-    # os.chdir(training_pdf_folder)
     # serial downloading
     start_index = len(os.listdir(training_pdf_folder))
     print("start index: " + str(start_index))
     download_files(training_pdf_folder, complaints, start_index)
-
-
-
-
-    # os.chdir(config['data_path'])
-    # raw_data_folder = 'raw'
-    # metadata_folder = os.path.join(raw_data_folder, 'metadata')
-    # # change to metadata folder and read metadata csv
-    # os.chdir(metadata_folder)
-    # complaints = pd.read_csv('complaint_meta.csv')
-    # # change to folder for storing the data
-    # complaint_folder = 'complaints'
-    # os.chdir("..")
-    # # serial downloading
-    # start_index = len(os.listdir(complaint_folder))
-    # print("start index: " + str(start_index))
-    # download_files(complaint_folder, complaints, start_index)

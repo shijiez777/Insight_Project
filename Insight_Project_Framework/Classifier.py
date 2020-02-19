@@ -35,6 +35,14 @@ class Classifier():
         self.test_ratio = test_ratio
 
     def preprocess_fun(self):
+        """
+        Process and prepare data for training.
+        
+        Loads county names, and add them into the lexicon.
+        Load and clean the training data.
+        Convert texts into TF-IDF vectors.
+        Train-test split the data.
+        """
         self.word_processor.lexicon_add_words(self.county_names)
         # load data and clean
         self.word_processor.load_training_data_and_clean()
@@ -45,8 +53,14 @@ class Classifier():
         self.X_train, self.X_test, self.y_train, self.y_test = train_test_split(self.tf_idf_vector.toarray(), self.encoded_labels, test_size=self.test_ratio, stratify=self.encoded_labels)
         print("Training data processed.")
 
-    # simple predict
     def simple_inference(self):
+        """
+        Make predictions using simple rules.
+
+        If one and only one county name found in processed text, return the name as 
+        prediction. If no or more than 1 county name found from text, consider the system unable
+        to make a prediction. This approach is used as a baseline.
+        """
         correct_preds = 0
         result_DF = pd.DataFrame(np.zeros((len(self.word_processor.corpus), len(self.keys))), columns = self.county_names)
         for i in range(len(self.word_processor.corpus)):
@@ -69,6 +83,12 @@ class Classifier():
         print("Mean accuracy over 6 1-vs-all linear SVMs: " + str(self.clf.score(self.X_test, self.y_test)))
 
     def predict_by_id(self, ids):
+        """
+        Make predictions from files identified by ID.
+
+        From the list of ids, query and download the documents from the client 
+        server, process and clean the texts, and make predictions.
+        """
         texts = []
         for id in ids:
             content = download_file_by_id(id)
@@ -80,6 +100,12 @@ class Classifier():
         return y_pred
 
     def predict_from_folder(self, processed_data_folder):
+        """
+        Make prediction on PDF files from a folder.
+
+        Locate the processed_data_folder, load and prepare the PDF files, 
+        and make predictions.
+        """
         texts, files = self.word_processor.load_data_for_prediction(processed_data_folder)
         X_pred = self.feature_vectorizer.transform(texts)
         y_pred = self.clf.predict(X_pred)
@@ -91,7 +117,6 @@ if __name__ == "__main__":
     config = read_yaml(config_path)
 
     clf = svm.LinearSVC()
-
     c = Classifier(config["text_folder_path"], config["num_pages"], config["language"], config["keys"], config["county_names"], config["num_features"], clf, config["test_ratio"])
     c.preprocess_fun()
     c.simple_inference()

@@ -1,3 +1,16 @@
+"""
+Script to make inference to all the PDF files in a directory.
+
+Directory of pdf files specified by prediction_pdf_path 
+in configs/config.yml.
+
+Directory to store OCRed text specified by prediction_processed_text_path
+in configs/config.yml.
+
+Directory to store prediction output specified by prediction_output_path
+in configs/config.yml.
+"""
+
 from helpers import *
 from OCR import threaded_OCR
 import pandas as pd

@@ -1,3 +1,9 @@
+"""
+Script to make inference by ids.
+
+list of ids specified by ids in configs/config.xml.
+"""
+
 from helpers import *
 
 if __name__ == "__main__":

@@ -38,8 +38,8 @@ class Word_processor():
         self.lexicon_add_words(self.county_names)
 
     # https://www.science-emergence.com/Articles/How-to-remove-string-control-characters-n-t-r-in-python/
-    # replace string control chars with a space
     def remove_string_control_chars(self, text):
+        """Replace string control chars with a space."""
         regex = re.compile(r'[\n\r\t]')
         cleaned = regex.sub(" ", text)
         return cleaned
@@ -51,15 +51,14 @@ class Word_processor():
     def remove_spaces(self, text):
         return re.sub(' +', ' ', text)
 
-    # function to remove numbers from a list of strings
     def remove_numbers(self, text):
+        """Remove numbers from a list of strings."""
         return [word for word in text if not word.isnumeric()]
 
     def list2string(self, word_list):
         return ' '.join(word_list)
 
     def remove_stop_words(self, text, language):
-        # stop_words = set(stopwords.words(language))
         word_tokens = word_tokenize(text)
         filtered_sentence = [w for w in word_tokens if not w in self.stop_words]
         return filtered_sentence
@@ -106,18 +105,8 @@ class Word_processor():
         cleaned = self.list2string(cleaned) 
         return cleaned
 
-    # def load_single_file_and_clean(self, file_name):
-    #     text = read_pickle(self.text_folder_path, file_name)
-    #     if len(text) > self.num_pages:
-    #         text = text[:self.num_pages]
-    #     # concatenate texts from different pages
-    #     text = '\n'.join(text)
-    #     cleaned_text = self.clean_text(text)
-    #     return cleaned_text
-
-
     def clean_and_concatenate_text(self, text):
-        # text = read_pickle(self.text_folder_path, file_name)
+        """Clean the OCR extracted text, and concatenate contents from different pages into 1 single long text."""
         if len(text) > self.num_pages:
             text = text[:self.num_pages]
         # concatenate texts from different pages
@@ -157,16 +146,9 @@ class Word_processor():
         return cleaned_data, files
 
 if __name__ == "__main__":
-    # language = 'english'
-    # num_pages = 2
-    # county_names = ['fresno', 'kern', 'los angeles', 'santa clara', 'san francisco', 'san mateo']
-
-    # text_folder_path = os.path.join(os.environ['data_dir'], 'preprocessed/complaints')
-
     config_path = "../configs/config.yml"
     config = read_yaml(config_path)
 
-    # wp = Word_processor(language, num_pages, county_names, text_folder_path)
     wp = Word_processor(config["language"], config["num_pages"], config["county_names"], config["text_folder_path"])
     wp.load_data_and_clean()
     print(wp.corpus[0])

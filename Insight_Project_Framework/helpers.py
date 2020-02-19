@@ -1,3 +1,5 @@
+"""Helper functions."""
+
 import yaml
 import pickle
 import os
@@ -21,15 +23,18 @@ def read_pickle(text_folder_path, file_name):
     return read_text
 
 def read_yaml(config_path):
+    """Load config files."""
     with open(config_path) as file:
         data = yaml.load(file, Loader=yaml.FullLoader)
     return data
 
 def ensure_dir(directory):
+    """Check if directory exists. If not, create."""
     if not os.path.exists(directory):
         os.makedirs(directory)
 
 def save_model(classifier, model_folder):
+    """Trim the classifier of unnecessary training data, and save it locally as a joblib."""
     # remove model word
     model_name = "model_" + datetime.now().strftime("%m-%d-%y_%H:%M:%S") + ".joblib"
     model_path = os.path.join(model_folder, model_name)
@@ -44,5 +49,6 @@ def save_model(classifier, model_folder):
     print("Model saved at " + model_folder + ".")
 
 def load_model(model_path):
+    """Loads the saved joblib model."""
     clf = load(model_path) 
     return clf

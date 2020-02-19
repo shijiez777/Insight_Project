@@ -1,4 +1,12 @@
-# Script to run OCR on pdf files and output text into data/preprocessed.
+"""
+Run OCR on pdf files and output text.
+
+directory to downloaded PDF files to be OCRed specified by training_pdf_folder
+in configs/config.xml.
+
+directory to store OCRed files specified by text_folder_path
+in configs/config.xml.
+"""
 
 import pytesseract
 import numpy as np
@@ -48,8 +56,8 @@ def doc2text(pdf_folder_path, text_folder_path, pdf_file_name, num_pages):
     return
 
 def bytes2text(request_content, num_pages):
+    """Directly OCR on received content, and process and run OCR on the fly without saving PDF file locally."""
     images = convert_from_bytes(request_content)
-
     tmp_texts = []
     for i in range(len(images)):
         if i < num_pages:
@@ -57,9 +65,8 @@ def bytes2text(request_content, num_pages):
             tmp_texts.append(pytesseract.image_to_string(image))
     return tmp_texts
 
-# threadmanager class for running multithreading.
 class ThreadManger(Thread):
-
+    """Threadmanager class for running threaded process."""
     def __init__(self, queue):
         super(ThreadManger, self).__init__()
         self.queue = queue
@@ -77,6 +84,7 @@ class ThreadManger(Thread):
             self.queue.task_done()
 
 def threaded_OCR(pdf_folder_path, text_folder_path, config):
+    """Wrapper function to arrange the threaded OCR tasks to all the available threads."""
     # check if directory exists. If not, create
     ensure_dir(text_folder_path)
 

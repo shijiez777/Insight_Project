@@ -1,3 +1,5 @@
+"""Train and save the trained model."""
+
 from Classifier import *
 
 if __name__ == "__main__":
