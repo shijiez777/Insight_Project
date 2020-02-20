@@ -21,18 +21,13 @@ def download_files(folder_name, df, start_index = 0):
     start_index(int): index of files in dataframe to begin download, optional.
     """
     print("Downloading  docs to " + folder_name + "...")
-    # os.chdir(folder_name)
-    # if folder_name not in os.listdir():
-    #     os.mkdir(folder_name)
     for i in range(start_index, len(df)):
         url = df['poc_file_path'][i]
         file_name = df['document_id'][i] + '.' + url.split('.')[-1]
         # retrieve doc from URL.
         myfile = requests.get(url, allow_redirects=True)
-        # open(os.path.join(folder_name, file_name), 'wb').write(myfile.content)
         with open(os.path.join(folder_name, file_name), 'wb') as file_handle:
             file_handle.write(myfile.content)
-
         print(i, end='\r')
     print("\nDone")
 
@@ -54,13 +49,10 @@ def download_file_by_id(document_id):
 if __name__ == "__main__":
 
     config_path = "../configs/config.yml"
-    config = read_yaml(config_path)
-    
+    config = read_yaml(config_path)    
     complaints = pd.read_csv(os.path.join(config["metadata_folder"], 'complaint_meta.csv'))
-    
     training_pdf_folder = config["training_pdf_folder"]
     ensure_dir(training_pdf_folder)
-    # serial downloading
     start_index = len(os.listdir(training_pdf_folder))
     print("start index: " + str(start_index))
     download_files(training_pdf_folder, complaints, start_index)
