@@ -20,7 +20,7 @@ def download_files(folder_name, df, start_index = 0):
     df(np.DataFrame): dataframe containing the metadata of pdfs.
     start_index(int): index of files in dataframe to begin download, optional.
     """
-    print("Downloading " + folder_name + " docs...")
+    print("Downloading  docs to " + folder_name + "...")
     # os.chdir(folder_name)
     # if folder_name not in os.listdir():
     #     os.mkdir(folder_name)
@@ -30,7 +30,7 @@ def download_files(folder_name, df, start_index = 0):
         # retrieve doc from URL.
         myfile = requests.get(url, allow_redirects=True)
         # open(os.path.join(folder_name, file_name), 'wb').write(myfile.content)
-        with open(file_name, 'wb') as file_handle:
+        with open(os.path.join(folder_name, file_name), 'wb') as file_handle:
             file_handle.write(myfile.content)
 
         print(i, end='\r')

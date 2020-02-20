@@ -9,27 +9,37 @@ This package uses methods in computer vision and natural language processing to 
 Details about the motivation, methods and results can be found in my presentation [here](https://docs.google.com/presentation/d/1BxIq04CDL6nZnhcKT7H9yd9UgOVkiYbF6GAWi6DUfXA/edit?usp=sharing).
 
 # Environment setup
+## Build the docker image
 The Environment can be set up using the included `Dockerfile` inside `Insight_Project_Framework` using command:
 ```
 docker build --tag=ledoc .
 ```
 
-# To start the docker and mount the data directory:
+## Start the docker and mount the data directory:
 ```
-docker run -v [DIRECTORY_WHERE_PDF_IS_STORED]:/data -it ledoc
+docker run -v [PROJECT_DATA_DIRECOTRY]:/data -it ledoc
 ```
 For example, to mount the current directory while running the container:
 ```
 docker run -v $(pwd):/data -it ledoc
 ```
 
+# Training
 
-## set up environment variables
-In your bash file, add `Insight_Project` to the the git repo directory and `data_dir` where the data is to be stored:
+The data folder should contain the metadat csv. For example: `[PROJECT_DATA_DIRECOTRY]/raw/metadata/` should contain the metadata csv.
+
+
+
+<!-- ## set up environment variables -->
+<!-- In your bash file, add `Insight_Project` to the the git repo directory and `data_dir` where the data is to be stored:
 ```
     export Insight_Project=[PROJECT_DIRECTORY]
     export data_dir=[DATA_DIRECTORY]
-```
+``` -->
+
+## Move metadata csv files to /data/raw/metadata
+
+
 
 ## Download the data
 1. Put the metadata csv inside `Insight_Project/data/raw/metadata`
