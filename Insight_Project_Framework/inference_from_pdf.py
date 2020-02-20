@@ -22,7 +22,6 @@ if __name__ == "__main__":
     c = load_model(model_path)
 
     # move to data directory
-    # os.chdir(config['data_path'])
     pdf_folder_path = config["prediction_pdf_path"]
     text_folder_path = config["prediction_processed_text_path"]
     output_path = config["prediction_output_path"]

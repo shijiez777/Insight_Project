@@ -1,9 +1,12 @@
 
 # TRAINING
 # downloader configs -----------------------------------------------------------
-data_path: ../../data
-metadata_folder: ../../data/raw/metadata
-training_pdf_folder: ../../data/raw/complaints
+# data_path: ../../data
+# metadata_folder: ../../data/raw/metadata
+# training_pdf_folder: ../../data/raw/complaints
+data_path: /data
+metadata_folder: /data/raw/metadata
+training_pdf_folder: /data/raw/complaints
 model_folder: ../models
 model_name: model_02-18-20_10:38:00.joblib
 
@@ -11,7 +14,10 @@ model_name: model_02-18-20_10:38:00.joblib
 # number of threads to run OCR process. Increase to speed up OCR.
 num_cores: 16
 # folder to store extracted unprocessed text from OCR
-text_folder_path: ../../data/preprocessed/complaints
+# text_folder_path: ../../data/preprocessed/complaints
+text_folder_path: /data/preprocessed/complaints
+
+
 # number of pages to process
 num_pages: 2
 
