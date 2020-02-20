@@ -150,6 +150,6 @@ if __name__ == "__main__":
     config = read_yaml(config_path)
 
     wp = Word_processor(config["language"], config["num_pages"], config["county_names"], config["text_folder_path"])
-    wp.load_data_and_clean()
+    wp.load_training_data_and_clean()
     print(wp.corpus[0])
     print(len(wp.corpus))
