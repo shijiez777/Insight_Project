@@ -18,7 +18,7 @@ The data used are ~13k scanned PDF files. Links for downloading PDF files are st
 ### Clone the repo
 ```
 git clone https://github.com/shijiez777/Insight_Project.git
-cd Insight_Project
+cd Insight_Project/Insight_Project_Framework/
 ```
 
 ### Build the docker image
