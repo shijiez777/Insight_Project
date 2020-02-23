@@ -20,6 +20,14 @@ num_pages: 2
 language: 'english'
 county_names : ['fresno', 'kern', 'los angeles', 'santa clara', 'san francisco', 'san mateo']
 keys : ['FRE', 'KC', 'LA', 'SCL', 'SFC', 'SM']
+key_county_mapping:
+    FRE: fresno
+    KC: kern
+    LA: los angeles
+    SCL: santa clara
+    SFC: san francisco
+    SM: san mateo
+
 num_features: 10000 # dimension of tfidf vector, there are 3000 counties in the states
 test_ratio: 0.2
 
