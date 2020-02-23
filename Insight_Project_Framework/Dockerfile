@@ -22,6 +22,9 @@ RUN mkdir data
 
 RUN pip3 install -r requirements.txt
 
+# Expose streamlit port
+EXPOSE 8501
+
 # Download repo
 RUN git clone https://github.com/shijiez777/Insight_Project.git
 
