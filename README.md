@@ -45,7 +45,7 @@ docker run -v [PROJECT_DATA_DIRECOTRY]:/data -p 8501:8501 -it ledoc
 
 For example, to mount the current directory while running the container:
 ```
-docker run -v $(pwd):/data -it ledoc
+docker run -v $(pwd):/data -p 8501:8501 -it ledoc
 ```
 If you just want to test out inference, run:
 ```
