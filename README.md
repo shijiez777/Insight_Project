@@ -58,6 +58,11 @@ Please refer to and tune configs in `configs/config.yml` to suit your need. For 
 
 ## Inference
 ### Streamlit interface
+From docker container, start streamlit service: 
+```
+streamlit run streamlit_demo.py
+```
+
 In your browser, go to `localhost:8501` and test out classification.
 
 ### Inference on all PDFs in a folder

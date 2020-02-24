@@ -28,6 +28,5 @@ WORKDIR /Insight_Project/Insight_Project_Framework
 
 # Expose streamlit port
 EXPOSE 8501
-# Run streamlit module
-RUN streamlit run streamlit_demo.py
+
 CMD /bin/bash
