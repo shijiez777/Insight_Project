@@ -37,23 +37,30 @@ For example: `[PROJECT_DATA_DIRECOTRY]/raw/metadata/` should contain the metadat
 
 For inference, the metadata file is not needed.
 
-### Start the docker and mount the data directory
+### Start the docker, mount the data directory and forward Streamlit port
 
 ```
-docker run -v [PROJECT_DATA_DIRECOTRY]:/data -it ledoc
+docker run -v [PROJECT_DATA_DIRECOTRY]:/data -p 8501:8501 -it ledoc
 ```
+
 For example, to mount the current directory while running the container:
 ```
 docker run -v $(pwd):/data -it ledoc
-cd Insight_Project
 ```
+If you just want to test out inference, run:
+```
+docker run -p 8501:8501 -it ledoc
+```
+
 
 ### Package configs
 Please refer to and tune configs in `configs/config.yml` to suit your need. For example, increase `num_cores` to speed up OCR process.
 
 ## Inference
+### Streamlit interface
+In your browser, go to `localhost:8501` and test out classification.
 
-### Inference on PDFs in a folder
+### Inference on all PDFs in a folder
 1. In `configs/config.yml`: 
     - Specify folder containing PDF files to be classified: `prediction_pdf_path:`
     - specify folder for storing extracted text: `prediction_processed_text_path`

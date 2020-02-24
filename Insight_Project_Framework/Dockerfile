@@ -28,4 +28,8 @@ EXPOSE 8501
 # Download repo
 RUN git clone https://github.com/shijiez777/Insight_Project.git
 
+# move to Insight code repo
+RUN cd Insight_Project/Insight_Project_Framework
+# Run streamlit module
+RUN streamlit run streamlit_demo.py
 CMD /bin/bash
