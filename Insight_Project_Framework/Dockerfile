@@ -1,8 +1,8 @@
 FROM continuumio/miniconda3
 USER root
 
-RUN apt-get update -y \
-    gcc \
+RUN apt-get update
+RUN apt-get install  -y gcc \
     poppler-utils \
     tesseract-ocr \
     libtesseract-dev \
