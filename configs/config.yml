@@ -1,0 +1,43 @@
+
+# TRAINING
+# downloader configs -----------------------------------------------------------
+data_path: /data
+metadata_folder: /data/raw/metadata
+training_pdf_folder: /data/raw/complaints
+model_folder: ../models
+model_name: model_02-18-20_10:38:00.joblib
+
+# OCR configs ------------------------------------------------------------------
+# number of threads to run OCR process. Increase to speed up OCR.
+num_cores: 16
+# folder to store extracted unprocessed text from OCR
+text_folder_path: /data/preprocessed/complaints
+
+# number of pages to process
+num_pages: 2
+
+# Word processor and Classifier parameters -------------------------------------
+language: 'english'
+county_names : ['fresno', 'kern', 'los angeles', 'santa clara', 'san francisco', 'san mateo']
+keys : ['FRE', 'KC', 'LA', 'SCL', 'SFC', 'SM']
+key_county_mapping:
+    FRE: fresno
+    KC: kern
+    LA: los angeles
+    SCL: santa clara
+    SFC: san francisco
+    SM: san mateo
+
+num_features: 10000 # dimension of tfidf vector, there are 3000 counties in the states
+test_ratio: 0.2
+
+# INFERENCE
+# Inference by ID --------------------------------------------------------------
+# list of ids to run on prediction. Used in inference_by_id.py
+ids: ["CA_FRE_09iRh_XfvepbPbJreq6wcQ2", "CA_FRE_0BvgNMShVWXTMrvCogDYbA2", "CA_SCL_4gLMQ6Og9STw4lawaORElw2"]
+
+# Inference from PDF folder ----------------------------------------------------
+# inference on pdf files from a folder, used in inference_from_pdf.py
+prediction_pdf_path: ../dummy_data/raw
+prediction_processed_text_path: ../dummy_data/processed
+prediction_output_path: ../dummy_data/output

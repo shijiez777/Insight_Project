@@ -1,87 +1,58 @@
-# Download data from metadata csv in data/metadata to data/raw
+"""Download data from metadata csv in data/metadata to data/raw."""
 
 import pandas as pd
-import os
 import requests
 import json
 from io import BytesIO
 import pycurl
+import queue
+from helpers import *
 
 
-# try:
-#     from PIL import Image
-# except ImportError:
-#     import Image
-# import pytesseract
+def download_files(folder_name, df, start_index = 0):
+    """
+    Download all the pdf files from the dataset.
+    
+    Reads in from the csv, send query to the API and retrieve PDF and save to the local directory.
 
-raw_data_folder = '../data/raw'
-metadata_folder = os.path.join(raw_data_folder, 'metadata')
-
-# complaint_folder = os.path.join(raw_data_folder, 'complaints')
-# judgementFolder = os.path.join(raw_data_folder, 'judgements')
-# county_complaint_folder = os.path.join(raw_data_folder, 'countyComplaints')
-
-complaint_folder = 'complaints'
-judgementFolder = 'judgements'
-# county_complaint_folder = 'countyComplaints'
-
-os.chdir(metadata_folder)
-
-complaints = pd.read_csv('complaint_meta.csv')
-judgements = pd.read_csv('judgement_meta.csv')
-# poc_complaint = pd.read_csv('poc_complaint.csv')
-
-os.chdir("..")
-# function for downloading complaint and judgement documents from metadata csv.
-def download_files(folder_name, df, start_idx = 0):
-    print("Downloading " + folder_name + " docs...")
-    if folder_name not in os.listdir():
-        os.mkdir(folder_name)
-
-    for i in range(start_idx, len(df)):
+    Parameters:
+    folder_name(string): path to store the pdf files.
+    df(np.DataFrame): dataframe containing the metadata of pdfs.
+    start_index(int): index of files in dataframe to begin download, optional.
+    """
+    print("Downloading  docs to " + folder_name + "...")
+    for i in range(start_index, len(df)):
         url = df['poc_file_path'][i]
         file_name = df['document_id'][i] + '.' + url.split('.')[-1]
-        # file_name = url.split('/')[-1]
-        
+        # retrieve doc from URL.
         myfile = requests.get(url, allow_redirects=True)
-        open(os.path.join(folder_name, file_name), 'wb').write(myfile.content)
-
+        with open(os.path.join(folder_name, file_name), 'wb') as file_handle:
+            file_handle.write(myfile.content)
         print(i, end='\r')
-        # if i == 10:
-        #     break
-    print("Done")
+    print("\nDone")
 
-# function for downloading poc_complaint.
-# def download_POC_complaint_files(folder_name, df, start_idx = 0):
-#     print("Downloading " + folder_name + " docs...")
 
-#     if folder_name not in os.listdir():
-#         os.mkdir(folder_name)
+def download_file_by_id(document_id):
+    c = pycurl.Curl()
+    c.setopt(pycurl.HTTPHEADER, ["x-api-key: rYRv7klUYJa9bFj0MbM3F6YCPE8kTCWH4DxiycxQ"])
+    url = "https://doc-poc.unicourt.com/v1/getdocument?document_id=" + document_id
+    c.setopt(c.URL, url)
+    buffer = BytesIO()
+    c.setopt(c.WRITEDATA, buffer)
+    c.perform()
+    tmp = buffer.getvalue().decode('utf-8')
+    pdf_url = json.loads(tmp)['url']
+    myfile = requests.get(pdf_url, allow_redirects=True)
+    c.close()
+    return myfile.content
 
-#     c = pycurl.Curl()
-#     c.setopt(pycurl.HTTPHEADER, ["x-api-key: rYRv7klUYJa9bFj0MbM3F6YCPE8kTCWH4DxiycxQ"])
+if __name__ == "__main__":
 
-#     for i in range(start_idx, len(df)): 
-#         document_id = df['document_id'][i]
-#         url = "https://doc-poc.unicourt.com/v1/getdocument?document_id=" + document_id
-
-#         c.setopt(c.URL, url)
-#         buffer = BytesIO()
-
-#         c.setopt(c.WRITEDATA, buffer)
-#         c.perform()
-
-#         tmp = buffer.getvalue().decode('utf-8')
-#         pdf_url = json.loads(tmp)['url']
-    
-#         file_name = pdf_url.split('/')[5].split('?')[0]
-#         myfile = requests.get(pdf_url, allow_redirects=True)
-#         open(os.path.join(folder_name, file_name), 'wb').write(myfile.content)
-
-#         print(i, end='\r')
-#     c.close()
-#     print("Done")
-
-download_files(complaint_folder, complaints)
-# download_files(judgementFolder, judgements)
-# download_POC_complaint_files(county_complaint_folder, poc_complaint)
+    config_path = "../configs/config.yml"
+    config = read_yaml(config_path)    
+    complaints = pd.read_csv(os.path.join(config["metadata_folder"], 'complaint_meta.csv'))
+    training_pdf_folder = config["training_pdf_folder"]
+    ensure_dir(training_pdf_folder)
+    start_index = len(os.listdir(training_pdf_folder))
+    print("start index: " + str(start_index))
+    download_files(training_pdf_folder, complaints, start_index)

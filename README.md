@@ -1,127 +1,119 @@
-# Insight_Project_Framework
-Framework for machine learning projects at Insight Data Science.
+# LeDoC
+Legal document classification by counties.  
 
-## Motivation for this project format:
-- **Insight_Project_Framework** : Put all source code for production within structured directory
-- **tests** : Put all source code for testing in an easy to find location
-- **configs** : Enable modification of all preset variables within single directory (consisting of one or many config files for separate tasks)
-- **data** : Include example a small amount of data in the Github repository so tests can be run to validate installation
-- **build** : Include scripts that automate building of a standalone environment
-- **static** : Any images or content to include in the README or web framework if part of the pipeline
+## Motivation
+The client receives millions of legal documents every month and spends a lot of money parsing and classifying the documents. This project tackles the problem of classification of the documents by counties.
 
-## Setup
-Clone repository and update python path
-# Setting environmental variable absolutely necessary as code uses repo_name to navigate within project folder
+## Main idea
+
+This package uses methods in computer vision and natural language processing to extract text from scanned PDFs, process the texts, and train a classifier to predict the county name using features extracted from the texts. More specifically, Google Tesseract is used to extract the text. After feature engineering, the data are fed into a one-vs-all SVM classifier.
+
+## Presentation slides
+Details about the motivation, methods and results can be found in my presentation [here](https://docs.google.com/presentation/d/1BxIq04CDL6nZnhcKT7H9yd9UgOVkiYbF6GAWi6DUfXA/edit?usp=sharing).
+
+## Data
+The data used are ~13k scanned PDF files. Links for downloading PDF files are stored in the metadata csv provided by the client, which is not included in the repo. 
+
+## Environment setup
+### Clone the repo
 ```
-repo_name=Insight_Project_Framework # URL of your new repository
-username=mrubash1 # Username for your personal github account
-git clone https://github.com/$username/$repo_name
-cd $repo_name
-echo "export $repo_name=${PWD}" >> ~/.bash_profile
-echo "export PYTHONPATH=$repo_name/src:${PYTHONPATH}" >> ~/.bash_profile
-source ~/.bash_profile
-```
-Create new development branch and switch onto it
-```
-branch_name=dev-readme_requisites-20180905 # Name of development branch, of the form 'dev-feature_name-date_of_creation'}}
-git checkout -b $branch_name
+git clone https://github.com/shijiez777/Insight_Project.git
+cd Insight_Project/Insight_Project_Framework/
 ```
 
-## Initial Commit
-Lets start with a blank slate: remove `.git` and re initialize the repo
+### Build the docker image
+The Environment can be set up using the included `Dockerfile` inside `Insight_Project_Framework` using command:
 ```
-cd $repo_name
-rm -rf .git   
-git init   
-git status
-```  
-You'll see a list of file, these are files that git doesn't recognize. At this point, feel free to change the directory names to match your project. i.e. change the parent directory Insight_Project_Framework and the project directory Insight_Project_Framework:
-Now commit these:
+docker build --tag=ledoc .
 ```
-git add .
-git commit -m "Initial commit"
-git push origin $branch_name
+
+### Prepare metadata needed for training
+
+_This section is not necessary for inference._
+
+To be able to train your own model, place the `metadata csv` inside the folder to be mounted to the docker container in `raw/metadata` directory.  
+
+For example: `[PROJECT_DATA_DIRECOTRY]/raw/metadata/` should contain the metadata csv.  
+
+For inference, the metadata file is not needed.
+
+### Start the docker, mount the data directory and forward Streamlit port
+
 ```
+docker run -v [PROJECT_DATA_DIRECOTRY]:/data -p 8501:8501 -it ledoc
+```
+
+For example, to mount the current directory while running the container:
+```
+docker run -v $(pwd):/data -it ledoc
+```
+If you just want to test out inference, run:
+```
+docker run -p 8501:8501 -it ledoc
+```
+
+
+### Package configs
+Please refer to and tune configs in `configs/config.yml` to suit your need. For example, increase `num_cores` to speed up OCR process.
+
+## Inference
+### Streamlit interface
+In your browser, go to `localhost:8501` and test out classification.
+
+### Inference on all PDFs in a folder
+1. In `configs/config.yml`: 
+    - Specify folder containing PDF files to be classified: `prediction_pdf_path:`
+    - specify folder for storing extracted text: `prediction_processed_text_path`
+    - Specify folder for output: `prediction_output_path`
+
+2. Inside `Insight_Project_Framework` run:
+```
+python3 inference_from_pdf.py 
+```
+
+### Infering documents by IDs:
+1. Specify document IDs to be classified by modifying `id` in `configs/config.yml`
+
+2. Inside `Insight_Project_Framework` run:
+```
+python3 inference_by_id.py 
+```
+
+## Training
+
+### Download the PDF files from meetadata csv
+1. Put the metadata csv inside `Insight_Project/data/raw/metadata`
+2. Go the the `Insight_Project_Framework` and run the script to download the data using
+```
+python3 downloader.py
+```
+The data downloaded will be stored, by default, inside `[PROJECT_DATA_DIRECOTRY]/raw/complaints`
+
+### Multithread text extraction using Tesseract OCR
+Inside `Insight_Project_Framework` run:
+```
+python3 OCR.py
+```
+The extracted text will be stored by default, inside `[PROJECT_DATA_DIRECOTRY]/preprocessed/complaints` in pickle format.
+
+### Text processing and training
+To adjust county labels available the dataset for training, modify `county_names` and `keys` inside `configs/config.yml`.
+
+Inside `Insight_Project_Framework` run:
+```
+python3 train.py
+```
+The trained model will be stored inside `models/`.
 
 ## Requisites
-
-- List all packages and software needed to build the environment
-- This could include cloud command line tools (i.e. gsutil), package managers (i.e. conda), etc.
+- poppler-utils
+- tesseract-ocr
+- libtesseract-dev
 
 #### Dependencies
-
-- [Streamlit](streamlit.io)
-
-#### Installation
-To install the package above, pleae run:
-```shell
-pip install -r requiremnts
-```
-
-## Build Environment
-- Include instructions of how to launch scripts in the build subfolder
-- Build scripts can include shell scripts or python setup.py files
-- The purpose of these scripts is to build a standalone environment, for running the code in this repository
-- The environment can be for local use, or for use in a cloud environment
-- If using for a cloud environment, commands could include CLI tools from a cloud provider (i.e. gsutil from Google Cloud Platform)
-```
-# Example
-
-# Step 1
-# Step 2
-```
-
-## Configs
-- We recommond using either .yaml or .txt for your config files, not .json
-- **DO NOT STORE CREDENTIALS IN THE CONFIG DIRECTORY!!**
-- If credentials are needed, use environment variables or HashiCorp's [Vault](https://www.vaultproject.io/)
-
-
-## Test
-- Include instructions for how to run all tests after the software is installed
-```
-# Example
-
-# Step 1
-# Step 2
-```
-
-## Run Inference
-- Include instructions on how to run inference
-- i.e. image classification on a single image for a CNN deep learning project
-```
-# Example
-
-# Step 1
-# Step 2
-```
-
-## Build Model
-- Include instructions of how to build the model
-- This can be done either locally or on the cloud
-```
-# Example
-
-# Step 1
-# Step 2
-```
-
-## Serve Model
-- Include instructions of how to set up a REST or RPC endpoint
-- This is for running remote inference via a custom model
-```
-# Example
-
-# Step 1
-# Step 2
-```
-
-## Analysis
-- Include some form of EDA (exploratory data analysis)
-- And/or include benchmarking of the model and results
-```
-# Example
-
-# Step 1
-# Step 2
-```
+- pdf2image
+- scikit-learn
+- scipy
+- numpy
+- pytesseract
+- nltk
